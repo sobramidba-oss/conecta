@@ -1,0 +1,16 @@
+{
+  "name": "sobramid-ba-conecta",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Aplicativo e painel administrativo SOBRAMID-BA Conecta.",
+  "scripts": {
+    "start": "vercel dev",
+    "build": "node -e \"console.log('Static build ready')\""
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.56.0"
+  },
+  "devDependencies": {
+    "vercel": "^46.0.0"
+  }
+}

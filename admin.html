@@ -1,0 +1,1203 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin SOBRAMID-BA Conecta</title>
+  <style>
+    :root {
+      --deep: #003070;
+      --ink: #002866;
+      --blue: #073b83;
+      --red: #c80000;
+      --muted: #596a84;
+      --line: #d7dfeb;
+      --paper: #ffffff;
+      --wash: #f5f8fc;
+      --shadow: 0 18px 50px rgba(0, 48, 112, .14);
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; overflow-x: hidden; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #f3f6fb;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    img { max-width: 100%; }
+
+    .login {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(340px, 460px);
+      background:
+        linear-gradient(120deg, rgba(0,48,112,.96), rgba(0,48,112,.84)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,.08) 0 1px, transparent 1px 18px);
+    }
+
+    .login-copy {
+      color: #fff;
+      padding: clamp(28px, 6vw, 76px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 28px;
+    }
+    .login-copy img { width: 178px; filter: drop-shadow(0 8px 18px rgba(0,0,0,.18)); }
+    .login-copy h1 { margin: 0 0 12px; font-size: clamp(34px, 6vw, 64px); line-height: 1; }
+    .login-copy p { margin: 0; color: #d6e4f2; max-width: 620px; line-height: 1.55; }
+
+    .login-card {
+      align-self: center;
+      margin: 24px;
+      padding: 22px;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.24);
+    }
+    .login-card h2 { margin: 0; font-size: 24px; }
+    .login-card p { margin: 8px 0 18px; color: var(--muted); line-height: 1.45; }
+
+    label { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 700; }
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      min-height: 42px;
+      padding: 0 12px;
+    }
+    textarea { min-height: 96px; padding-top: 10px; resize: vertical; }
+    form { display: grid; gap: 12px; }
+
+    .btn, .ghost {
+      border: 1px solid var(--line);
+      min-height: 40px;
+      padding: 0 13px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--ink);
+      background: #fff;
+      text-decoration: none;
+      font-weight: 700;
+    }
+    .btn {
+      background: var(--red);
+      border-color: var(--red);
+      color: #fff;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: none;
+      grid-template-columns: 264px minmax(0, 1fr);
+    }
+    .app.unlocked { display: grid; }
+    .login.hidden { display: none; }
+
+    .side {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 22px 16px;
+      background: var(--deep);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .side img { width: 150px; }
+    .side small { color: #c3d2e6; }
+    .side nav { display: grid; gap: 6px; }
+    .side button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 8px;
+      padding: 0 12px;
+      background: transparent;
+      color: #dbe6ef;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+    }
+    .side button.active, .side button:hover { background: rgba(255,255,255,.1); color: #fff; }
+    .side button.active { box-shadow: inset 3px 0 0 var(--red); }
+    .side-actions { margin-top: auto; display: grid; gap: 10px; }
+    .side-actions a, .side-actions button {
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.08);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      min-height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    main { min-width: 0; padding: 24px clamp(16px, 3vw, 34px); }
+    .top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .top h1 { margin: 0; font-size: 28px; }
+    .top p { margin: 6px 0 0; color: var(--muted); }
+
+    .section { display: none; }
+    .section.active { display: block; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .span-3 { grid-column: span 3; }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    .card {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 10px 30px rgba(0,48,112,.07);
+    }
+    .metric {
+      min-height: 116px;
+      background: var(--deep);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .metric:nth-child(even) { background: var(--blue); }
+    .metric span { color: #c3d2e6; font-size: 13px; }
+    .metric b { font-size: 30px; line-height: 1; }
+
+    .head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .head h2 { margin: 0; font-size: 20px; }
+    .head p { margin: 5px 0 0; color: var(--muted); line-height: 1.4; }
+
+    .pill {
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 99px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      background: #eef3fb;
+      color: var(--deep);
+      white-space: nowrap;
+    }
+    .pill.red { background: #ffe9e8; color: var(--red); }
+    .pill.gold { background: #fff5d8; color: #7e5f10; }
+    .pill.blue { background: #e7effa; color: var(--blue); }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .toolbar input { flex: 1 1 240px; }
+    .toolbar select { flex: 0 1 210px; }
+
+    .stage-board {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .stage-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 13px;
+      min-height: 92px;
+    }
+    .stage-card b { display: block; font-size: 25px; margin-top: 8px; }
+    .stage-card span { color: var(--muted); font-size: 13px; }
+    .template-preview {
+      min-height: 210px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f7f9fd;
+      color: var(--ink);
+      white-space: pre-wrap;
+      line-height: 1.55;
+    }
+    .template-vars {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .stage-select {
+      min-width: 150px;
+      min-height: 34px;
+      padding: 0 8px;
+      font-size: 13px;
+    }
+    .whatsapp {
+      border-color: #1f9d55;
+      background: #1f9d55;
+      color: #fff;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+    }
+    th {
+      background: #f3f6fb;
+      color: var(--deep);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td span.note { color: var(--muted); display: block; margin-top: 3px; }
+    .row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .row-actions button { min-height: 32px; padding: 0 9px; font-size: 12px; }
+
+    .editor {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .editor .full { grid-column: 1 / -1; }
+    .form-actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .form-actions .btn,
+    .form-actions .ghost {
+      flex: 1 1 160px;
+    }
+    .list { display: grid; gap: 10px; }
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+    .mini h3 { margin: 0 0 6px; font-size: 16px; }
+    .mini p { margin: 0; color: var(--muted); line-height: 1.4; font-size: 14px; }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      max-width: 360px;
+      background: var(--deep);
+      color: #fff;
+      padding: 14px 16px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(20px);
+      pointer-events: none;
+      transition: .2s ease;
+      z-index: 20;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    .mobile-tabs { display: none; }
+
+    @media (max-width: 980px) {
+      .app { display: none; }
+      .app.unlocked { display: block; padding-bottom: 76px; }
+      .side { display: none; }
+      main { padding: 14px 12px; }
+      .top {
+        position: sticky;
+        top: 0;
+        z-index: 8;
+        margin: -14px -12px 14px;
+        padding: 12px;
+        background: rgba(245,248,252,.96);
+        border-bottom: 1px solid var(--line);
+        backdrop-filter: blur(12px);
+      }
+      .top h1 { font-size: 22px; }
+      .grid { grid-template-columns: 1fr; gap: 12px; }
+      .span-3, .span-4, .span-5, .span-6, .span-7, .span-8, .span-12 { grid-column: 1 / -1; }
+      .editor { grid-template-columns: 1fr; }
+      .toolbar { display: grid; grid-template-columns: 1fr; }
+      .toolbar input, .toolbar select { width: 100%; }
+      .stage-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .head { flex-direction: column; }
+      .mobile-tabs {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 12;
+        display: flex;
+        overflow-x: auto;
+        background: #fff;
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -12px 30px rgba(0,48,112,.09);
+        padding-bottom: env(safe-area-inset-bottom);
+        scrollbar-width: none;
+      }
+      .mobile-tabs::-webkit-scrollbar { display: none; }
+      .mobile-tabs button {
+        flex: 0 0 86px;
+        border: 0;
+        min-height: 62px;
+        background: #fff;
+        color: var(--muted);
+        display: grid;
+        place-items: center;
+        align-content: center;
+        gap: 4px;
+        font-size: 10px;
+        padding: 4px 2px;
+      }
+      .mobile-tabs button.active { color: var(--red); font-weight: 800; }
+      .toast { left: 12px; right: 12px; bottom: 86px; }
+    }
+
+    @media (max-width: 720px) {
+      .login {
+        grid-template-columns: 1fr;
+      }
+      .login-copy {
+        padding: 28px 18px 0;
+        justify-content: flex-start;
+      }
+      .login-copy h1 { font-size: 34px; }
+      .login-card { margin: 18px; align-self: start; }
+      .metric { min-height: 94px; }
+      .stage-board { grid-template-columns: 1fr; }
+      table { min-width: 680px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="login" id="login">
+    <div class="login-copy">
+      <img src="assets/sobramid-ba-logo.png" alt="SOBRAMID Bahia" />
+      <div>
+        <h1>Painel administrativo</h1>
+        <p>Acesso restrito para diretoria, secretaria e comissão científica gerenciarem toda a área do associado.</p>
+      </div>
+      <p>Protótipo: use qualquer e-mail institucional e a senha <b>admin</b>.</p>
+    </div>
+    <div class="login-card">
+      <h2>Entrar no admin</h2>
+      <p>Na versão em produção, este bloqueio deve usar Supabase Auth com perfis e regras de segurança.</p>
+      <form onsubmit="login(event)">
+        <label>E-mail
+          <input id="email" type="email" value="secretaria@sobramidba.com.br" autocomplete="username" />
+        </label>
+        <label>Senha
+          <input id="password" type="password" placeholder="Senha do protótipo" autocomplete="current-password" />
+        </label>
+        <button class="btn" type="submit">Acessar painel</button>
+        <a class="ghost" href="index.html">Voltar para área do associado</a>
+      </form>
+    </div>
+  </section>
+
+  <div class="app" id="app">
+    <aside class="side">
+      <div>
+        <img src="assets/sobramid-ba-logo.png" alt="SOBRAMID Bahia" />
+        <small>Painel restrito</small>
+      </div>
+      <nav id="nav"></nav>
+      <div class="side-actions">
+        <a href="index.html">Área do associado</a>
+        <button onclick="logout()">Sair</button>
+      </div>
+    </aside>
+
+    <main>
+      <header class="top">
+        <div>
+          <h1 id="title">Visão geral</h1>
+          <p id="subtitle">Controle operacional da SOBRAMID-BA Conecta.</p>
+        </div>
+        <button class="ghost" onclick="logout()">Sair</button>
+      </header>
+
+      <section class="section active" id="overview" data-title="Visão geral" data-subtitle="Controle operacional da SOBRAMID-BA Conecta.">
+        <div class="grid">
+          <div class="card metric span-3"><span>Associados na base</span><b id="metricMembers">0</b><span>importados da planilha</span></div>
+          <div class="card metric span-3"><span>CRM anuidade</span><b id="metricOpenBilling">0</b><span>em cobrança ativa</span></div>
+          <div class="card metric span-3"><span>Eventos publicados</span><b>4</b><span>2 com inscrição aberta</span></div>
+          <div class="card metric span-3"><span>Certificados emitidos</span><b>318</b><span>12 pendentes de envio</span></div>
+
+          <div class="card span-5">
+            <div class="head"><div><h2>Ações rápidas</h2><p>Atalhos da secretaria e diretoria científica.</p></div></div>
+            <div class="list">
+              <div class="mini"><h3>Novo associado</h3><p>Inclua dados, CRM, categoria, cidade, status da anuidade e perfil de acesso.</p><br><button class="btn" onclick="go('members')">Cadastrar associado</button></div>
+              <div class="mini"><h3>Enviar comunicado</h3><p>Publique aviso oficial com segmentação por categoria ou cidade.</p><br><button class="ghost" onclick="go('notices')">Criar comunicado</button></div>
+              <div class="mini"><h3>Emitir certificados</h3><p>Libere certificado individual ou lote para participantes de evento.</p><br><button class="ghost" onclick="go('certificates')">Gerenciar certificados</button></div>
+            </div>
+          </div>
+
+          <div class="card span-7">
+            <div class="head"><div><h2>Pendências críticas</h2><p>Itens que precisam de ação administrativa.</p></div></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Item</th><th>Módulo</th><th>Prioridade</th><th>Ação</th></tr></thead>
+                <tbody>
+                  <tr><td>8 cadastros aguardando validação documental</td><td>Associados</td><td><span class="pill red">Alta</span></td><td><button class="ghost" onclick="go('members')">Ver</button></td></tr>
+                  <tr><td id="criticalBilling">Cobranças de anuidade aguardando retorno</td><td>CRM cobrança</td><td><span class="pill gold">Média</span></td><td><button class="ghost" onclick="go('payments')">Cobrar</button></td></tr>
+                  <tr><td>5 conteúdos científicos aguardando revisão</td><td>Biblioteca</td><td><span class="pill blue">Normal</span></td><td><button class="ghost" onclick="go('library')">Revisar</button></td></tr>
+                  <tr><td>12 certificados pendentes de upload</td><td>Certificados</td><td><span class="pill gold">Média</span></td><td><button class="ghost" onclick="go('certificates')">Enviar</button></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="members" data-title="Associados" data-subtitle="Inclua, edite, valide e bloqueie acessos de associados.">
+        <div class="grid">
+          <div class="card span-4">
+            <div class="head"><div><h2 id="memberEditorTitle">Novo associado</h2><p>Edite os dados usados no diretório, carteira digital e CRM de cobrança.</p></div></div>
+            <form class="editor" id="memberForm" onsubmit="saveMember(event)">
+              <input type="hidden" id="memberIndex" value="" />
+              <label class="full">Nome completo<input id="memberName" placeholder="Nome do associado" required /></label>
+              <label>CRM<input id="memberCrm" placeholder="CRM-BA" /></label>
+              <label>Telefone/WhatsApp<input id="memberPhone" placeholder="71 99999-9999" /></label>
+              <label class="full">E-mail<input id="memberEmail" type="email" placeholder="email@exemplo.com.br" /></label>
+              <label class="full">Especialidade<input id="memberSpecialty" placeholder="Especialidade/área de atuação" /></label>
+              <label>Categoria<select id="memberCategory"><option>Titular</option><option>Aspirante</option><option>Colaborador</option><option>Diretoria</option></select></label>
+              <label>Status do cadastro<select id="memberStatus"><option>Ativo</option><option>Pendente</option><option>Bloqueado</option><option>Inativo</option></select></label>
+              <label>Etapa da anuidade<select id="memberStage"><option value="renovou">Já renovou</option><option value="em_contato">Em contato</option><option value="nao_renovou">Não renovou</option><option value="sem_retorno">Sem retorno</option></select></label>
+              <label>Valor da anuidade<input id="memberValue" placeholder="300" /></label>
+              <label class="full">Observações<textarea id="memberNotes" placeholder="Histórico, restrições, pendências ou observações internas"></textarea></label>
+              <div class="form-actions">
+                <button class="btn" type="submit">Salvar cadastro</button>
+                <button class="ghost" type="button" onclick="newMember()">Novo cadastro</button>
+              </div>
+            </form>
+          </div>
+          <div class="card span-8">
+            <div class="head"><div><h2>Base de associados</h2><p>Controle total dos perfis que aparecem no app.</p></div><button class="btn" onclick="go('invites')">Gerenciar convites</button></div>
+            <div class="toolbar"><input id="memberSearch" placeholder="Buscar por nome, CRM, telefone, e-mail ou especialidade" oninput="renderMembers()" /><select id="memberStageFilter" onchange="renderMembers()"><option value="">Todas as etapas</option><option value="renovou">Já renovou</option><option value="em_contato">Em contato</option><option value="nao_renovou">Não renovou</option><option value="sem_retorno">Sem retorno</option></select></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Associado</th><th>Contato</th><th>Origem</th><th>Anuidade</th><th>Ações</th></tr></thead>
+                <tbody id="membersRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="invites" data-title="Convites de acesso" data-subtitle="Envie convites individuais ou em lote e personalize o e-mail de primeiro acesso.">
+        <div class="grid">
+          <div class="card span-12">
+            <div class="head">
+              <div><h2>Status dos convites</h2><p>Acompanhamento administrativo dos links de primeiro acesso.</p></div>
+              <button class="btn" onclick="sendInviteBatch()">Enviar convites em lote</button>
+            </div>
+            <div class="stage-board" id="inviteStages"></div>
+          </div>
+
+          <div class="card span-5">
+            <div class="head"><div><h2>Template do e-mail</h2><p>Modelo usado para convite de acesso via Supabase Auth.</p></div></div>
+            <form class="editor" onsubmit="saveInviteTemplate(event)">
+              <label class="full">Assunto<input id="inviteSubject" value="Seu acesso ao SOBRAMID-BA Conecta" oninput="renderInviteTemplatePreview()" /></label>
+              <label class="full">URL após o aceite<input id="inviteRedirect" value="https://app.sobramidba.com.br/primeiro-acesso" oninput="renderInviteTemplatePreview()" /></label>
+              <label class="full">Mensagem<textarea id="inviteBody" rows="9" oninput="renderInviteTemplatePreview()">Olá, Dr(a). {nome}.
+
+A SOBRAMID-BA está liberando seu acesso à área exclusiva do associado.
+
+CRM-BA: {crm}
+
+Clique no link abaixo para confirmar seu e-mail e criar sua senha:
+{link}
+
+Atenciosamente,
+Secretaria SOBRAMID-BA</textarea></label>
+              <div class="full template-vars"><span class="pill blue">{nome}</span><span class="pill blue">{crm}</span><span class="pill blue">{email}</span><span class="pill blue">{link}</span></div>
+              <button class="btn full" type="submit">Salvar template</button>
+            </form>
+          </div>
+
+          <div class="card span-7">
+            <div class="head"><div><h2>Prévia do envio</h2><p>Simulação do e-mail personalizado para o associado selecionado.</p></div></div>
+            <div class="template-preview" id="invitePreview"></div>
+          </div>
+
+          <div class="card span-12">
+            <div class="head"><div><h2>Convites por associado</h2><p>Controle de envio, reenvio, aceite e geração de link.</p></div></div>
+            <div class="toolbar">
+              <input id="inviteSearch" placeholder="Buscar por nome, CRM ou e-mail" oninput="renderInvites()" />
+              <select id="inviteFilter" onchange="renderInvites()">
+                <option value="">Todos os status</option>
+                <option value="nao_enviado">Não enviado</option>
+                <option value="enviado">Enviado</option>
+                <option value="aceito">Aceito</option>
+                <option value="sem_email">Sem e-mail</option>
+                <option value="erro">Erro</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Associado</th><th>E-mail</th><th>Convite</th><th>Ações</th></tr></thead>
+                <tbody id="inviteRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="certificates" data-title="Certificados" data-subtitle="Emissão, upload, validação e histórico de participação.">
+        <div class="grid">
+          <div class="card span-5">
+            <div class="head"><div><h2>Emitir certificado</h2><p>Associe certificado a um evento e a um associado.</p></div></div>
+            <form class="editor" onsubmit="fakeSave(event, 'Certificado liberado para o associado')">
+              <label>Associado<select><option>Dra. Mariana Azevedo</option><option>Dr. Lucas Ribeiro</option><option>Dra. Helena Matos</option></select></label>
+              <label>Evento<select><option>Simpósio baiano de dor crônica</option><option>Workshop de procedimentos</option></select></label>
+              <label>Carga horária<input value="12h" /></label>
+              <label>Código de validação<input value="SBBA-2026-0318" /></label>
+              <label class="full">Arquivo PDF<input type="file" /></label>
+              <button class="btn full" type="submit">Liberar certificado</button>
+            </form>
+          </div>
+          <div class="card span-7">
+            <div class="head"><div><h2>Certificados emitidos</h2><p>Baixe, substitua, revogue ou valide documentos.</p></div></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Certificado</th><th>Associado</th><th>Status</th><th>Ações</th></tr></thead>
+                <tbody id="certRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="events" data-title="Eventos" data-subtitle="Controle agenda, inscrições, check-in, palestrantes e materiais.">
+        <div class="grid">
+          <div class="card span-5">
+            <div class="head"><div><h2>Novo evento</h2><p>O evento aparece automaticamente na área do associado.</p></div></div>
+            <form class="editor" onsubmit="fakeSave(event, 'Evento publicado')">
+              <label class="full">Título<input value="Simpósio baiano de dor crônica" /></label>
+              <label>Data<input type="date" value="2026-09-12" /></label>
+              <label>Formato<select><option>Presencial</option><option>Online</option><option>Híbrido</option></select></label>
+              <label class="full">Local<input value="Salvador - BA" /></label>
+              <label class="full">Descrição<textarea>Programação com palestrantes convidados, check-in por QR Code e materiais pós-evento.</textarea></label>
+              <button class="btn full" type="submit">Publicar evento</button>
+            </form>
+          </div>
+          <div class="card span-7">
+            <div class="head"><div><h2>Agenda publicada</h2><p>Edite inscrições, materiais e certificado por evento.</p></div></div>
+            <div class="list" id="eventCards"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="library" data-title="Biblioteca" data-subtitle="Publique, revise e organize materiais científicos.">
+        <div class="grid">
+          <div class="card span-4">
+            <div class="head"><div><h2>Novo conteúdo</h2><p>Aulas, artigos, diretrizes, consensos e resumos.</p></div></div>
+            <form class="editor" onsubmit="fakeSave(event, 'Conteúdo salvo na biblioteca')">
+              <label class="full">Título<input value="Diretriz comentada: dor neuropática" /></label>
+              <label>Tema<select><option>Dor neuropática</option><option>Dor oncológica</option><option>Procedimentos</option></select></label>
+              <label>Tipo<select><option>PDF</option><option>Vídeo</option><option>Artigo</option><option>Consenso</option></select></label>
+              <label class="full">Arquivo/link<input value="biblioteca/diretriz-dor-neuropatica.pdf" /></label>
+              <button class="btn full" type="submit">Salvar conteúdo</button>
+            </form>
+          </div>
+          <div class="card span-8">
+            <div class="head"><div><h2>Conteúdos publicados</h2><p>Controle status, destaque e revisão científica.</p></div></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Conteúdo</th><th>Tema</th><th>Status</th><th>Ações</th></tr></thead>
+                <tbody id="libraryRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="notices" data-title="Comunicados" data-subtitle="Publique avisos oficiais, campanhas, assembleias e notas técnicas.">
+        <div class="grid">
+          <div class="card span-5">
+            <div class="head"><div><h2>Novo comunicado</h2><p>Canal direto da diretoria com os associados.</p></div></div>
+            <form class="editor" onsubmit="fakeSave(event, 'Comunicado publicado')">
+              <label class="full">Título<input value="Convocação para assembleia ordinária" /></label>
+              <label>Tipo<select><option>Oficial</option><option>Campanha</option><option>Nota técnica</option></select></label>
+              <label>Destinatários<select><option>Todos os associados</option><option>Somente titulares</option><option>Comissão científica</option></select></label>
+              <label class="full">Texto<textarea>Pauta administrativa, prestação de contas e próximos projetos da regional.</textarea></label>
+              <button class="btn full" type="submit">Publicar comunicado</button>
+            </form>
+          </div>
+          <div class="card span-7">
+            <div class="head"><div><h2>Comunicados ativos</h2><p>Fixe prioridade, arquive ou edite mensagens.</p></div></div>
+            <div class="list" id="noticeCards"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="payments" data-title="CRM de cobranças" data-subtitle="Funil de renovação da anuidade com WhatsApp por associado.">
+        <div class="grid">
+          <div class="card span-12">
+            <div class="head">
+              <div><h2>Funil da anuidade</h2><p>Etapas editáveis para acompanhar renovação, contato e falta de retorno.</p></div>
+              <button class="btn" onclick="toast('Lista de cobrança atualizada com base na planilha.')">Atualizar CRM</button>
+            </div>
+            <div class="stage-board" id="billingStages"></div>
+            <div class="toolbar">
+              <input id="billingSearch" placeholder="Buscar por nome, CRM, telefone ou e-mail" oninput="renderBilling()" />
+              <select id="billingFilter" onchange="renderBilling()">
+                <option value="">Todas as etapas</option>
+                <option value="renovou">Já renovou</option>
+                <option value="em_contato">Em contato</option>
+                <option value="nao_renovou">Não renovou</option>
+                <option value="sem_retorno">Sem retorno</option>
+              </select>
+              <button class="ghost" onclick="copyBillingMessage()">Copiar modelo</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Associado</th><th>Contato</th><th>Anuidade</th><th>Etapa</th><th>Ações</th></tr></thead>
+                <tbody id="billingRows"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="mobile-tabs" id="mobileTabs" aria-label="Admin mobile"></nav>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const sections = [
+      ["overview", "Visão geral"],
+      ["members", "Associados"],
+      ["invites", "Convites"],
+      ["certificates", "Certificados"],
+      ["events", "Eventos"],
+      ["library", "Biblioteca"],
+      ["notices", "Comunicados"],
+      ["payments", "Cobranças"]
+    ];
+
+    const members = [
+      ["Dra. Mariana Azevedo", "CRM-BA 24831", "Titular", "Pago"],
+      ["Dr. Lucas Ribeiro", "CRM-BA 19120", "Titular", "Pago"],
+      ["Dra. Helena Matos", "CRM-BA 22309", "Colaboradora", "Aberto"],
+      ["Dr. Paulo Meireles", "CRM-BA 17944", "Titular", "Pendente"],
+      ["Dra. Beatriz Nunes", "CRM-BA 20881", "Aspirante", "Pago"]
+    ];
+
+    const certs = [
+      ["Workshop de procedimentos intervencionistas", "Dra. Mariana Azevedo", "Disponível"],
+      ["Jornada baiana de dor neuropática", "Dr. Lucas Ribeiro", "Disponível"],
+      ["Atualização em dor oncológica", "Dra. Helena Matos", "Pendente"],
+      ["Simpósio SOBRAMID-BA 2025", "Dr. Paulo Meireles", "Revogado"]
+    ];
+
+    const library = [
+      ["Diretriz comentada: dor neuropática", "Dor neuropática", "Publicado"],
+      ["Aula: dor oncológica e cuidado integrado", "Dor oncológica", "Publicado"],
+      ["Checklist de procedimentos intervencionistas", "Procedimentos", "Revisão"],
+      ["Consenso interno de encaminhamento", "Dor neuropática", "Rascunho"]
+    ];
+
+    const billingContacts = [{"origem":"ASSOCIADOS 2025","nome":"ADRIANO FONSECA SILVA","crm":"11936","telefone":"71991957685","email":"dr.adrianofonseca@hotmail.com","valor":"300","status":"PENDENTE","etapa":"sem_retorno","observacoes":"","especialidade":"ESPECIALISTA EM ORTOPEDIA"},{"origem":"ASSOCIADOS 2025","nome":"ANA BÁRBARA SILVA ORRICO CAVALCANTE","crm":"25958","telefone":"71 99904-3305","email":"dr.ana.bc@gmail.com","valor":"300","status":"PENDENTE","etapa":"sem_retorno","observacoes":"","especialidade":"ORTOPEDIA / MEDICINA DA DOR"},{"origem":"ASSOCIADOS 2025","nome":"ANTÔNIO CARLOS PINTO VALADARES FILHO","crm":"13195","telefone":"71 993032223","email":"antoniovaladares70@hotmail.com","valor":"300","status":"PENDENTE","etapa":"sem_retorno","observacoes":"","especialidade":"ORTOPEDIA"},{"origem":"ASSOCIADOS 2025","nome":"BRUNO ALMEIDA BARRETO MACHADO","crm":"25610","telefone":"71 99988-0307","email":"brunobarretoortopedia@gmail.com","valor":"300","status":"PENDENTE","etapa":"sem_retorno","observacoes":"","especialidade":"ORTOPEDIA/TRAUMATOLOGIA"},{"origem":"INADIMPLENTES 2024","nome":"CAMILA CORRÊA DE CARVALHO","crm":"28857","telefone":"71 98188-6569","email":"contato@dracamilacorrea.com.br","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"INADIMPLENTES 2024","nome":"CARLOS ASSUNÇÃO FILHO ALBERTO","crm":"","telefone":"","email":"","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"ASSOCIADOS 2025","nome":"CARLOS EDUARDO ROMEU DE ALMEIDA","crm":"21678","telefone":"71 99711-0506","email":"contato@drcarlosromeu.com","valor":"300","status":"PENDENTE","etapa":"sem_retorno","observacoes":"","especialidade":"NEUROCIRURGIÃO / ESPECIALISTA EM DOR"},{"origem":"INADIMPLENTES 2024","nome":"DISNEI FELIX BARBOSA MATOS","crm":"29783","telefone":"71 99151-4891","email":"disnei.barbosa@icloud.com","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"INADIMPLENTES 2024","nome":"EDUARDO FELIZOLA","crm":"","telefone":"","email":"","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"INADIMPLENTES 2024","nome":"FERNANDO BORGES","crm":"35374","telefone":"84 99706-0073","email":"","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"INADIMPLENTES 2024","nome":"GUTEMBERG BRITTO DE OLIVEIRA","crm":"8720","telefone":"71 99133-9336","email":"dr.gutembergoliveira@gmail.com","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"ASSOCIADOS 2025","nome":"JACINTO MARCIANO DE BRITO SANTOS","crm":"26238","telefone":"71 99102-0449","email":"jacintomarciano@hotmail.com","valor":"300","status":"PENDENTE","etapa":"sem_retorno","observacoes":"","especialidade":"ORTOPEDIA/ESPECIALISTA EM DOR"},{"origem":"INADIMPLENTES 2024","nome":"JORGE PONTE","crm":"21541","telefone":"71 99655-8880","email":"","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"INADIMPLENTES 2024","nome":"JULIANA ALENCAR","crm":"25834","telefone":"71 98708-1345","email":"","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"INADIMPLENTES 2024","nome":"JÉSSICA RIBEIRO MATOS REQUIÃO","crm":"32250","telefone":"71 99171-0209","email":"jeu_jess@hotmail.com","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"INADIMPLENTES 2024","nome":"LARISSA MARIA PURIDADE MARCIEL","crm":"32149","telefone":"71 99338-5555","email":"larissa_puridade@hotmail.com","valor":"300","status":"SEM INTERESSE","etapa":"nao_renovou","observacoes":"Não tem interesse em renovar","especialidade":""},{"origem":"INADIMPLENTES 2024","nome":"MARCELO MARINHO","crm":"31062","telefone":"71 98717-1734","email":"","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"INADIMPLENTES 2024","nome":"MARCOS ANTONIO LOPES","crm":"10048","telefone":"71 98201-6569","email":"marcos090364@gmail.com","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"ASSOCIADOS 2025","nome":"PALOMA PASSOS CARVALHO BAHIA SAPUCAIA","crm":"34801","telefone":"71982198128","email":"paloma.sapucaia@gmail.com","valor":"300","status":"PENDENTE","etapa":"sem_retorno","observacoes":"","especialidade":"ESPECIALISTA EM DOR E ACUPUNTURA"},{"origem":"ASSOCIADOS 2025","nome":"RENATA NERI DA SILVA","crm":"24965","telefone":"71 99929-7369","email":"renataneri.medicinadador@gmail.com","valor":"300","status":"PENDENTE","etapa":"sem_retorno","observacoes":"","especialidade":"MEDICINA DA DOR E ANESTESIOLOGIA"},{"origem":"INADIMPLENTES 2024","nome":"STÉPHANE MIRELLA COSTA ALVES","crm":"35373","telefone":"84 99223-6060","email":"S.alvesortopedista@gmail.com","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"ASSOCIADOS 2025","nome":"TARCÍSIO MALAQUIAS BARRETTO","crm":"20546","telefone":"71 99351-5353","email":"tarcisiombar@bol.com.br","valor":"300","status":"PENDENTE","etapa":"sem_retorno","observacoes":"","especialidade":"ORTOPEDIA/TRAUMATOLOGIA"},{"origem":"INADIMPLENTES 2024","nome":"VICTOR COUTO","crm":"","telefone":"","email":"","valor":"300","status":"SEM INTERESSE","etapa":"nao_renovou","observacoes":"Não tem interesse em renovar","especialidade":""},{"origem":"INADIMPLENTES 2024","nome":"VITOR ROSA RAMOS DE MENDONÇA","crm":"25953","telefone":"71 99188-6666","email":"vitorrosaramos@hotmail.com","valor":"300","status":"INADIMPLENTE","etapa":"sem_retorno","observacoes":"","especialidade":""},{"origem":"RENOVADOS 2025","nome":"ANTONIO ARGOLO SAMPAIO FILHO","crm":"5886","telefone":"71 985352423","email":"aargoloufba@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"ANESTESIOLOGIA/DOR"},{"origem":"RENOVADOS 2025","nome":"ARABI XINGUARA CAMURUGY DE GUERREIRO","crm":"26990","telefone":"71 99271-7171","email":"arabi0210@yahoo.com.br","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"ACUPUNTURA/DOR"},{"origem":"RENOVACAO","nome":"Adriano Aparecido Bertanha","crm":"20954","telefone":"71 99195-6928","email":"dribertanha@hotmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia/ Médico da dor"},{"origem":"RENOVACAO","nome":"Adriano Sampaio Souza","crm":"10949","telefone":"71 99125-5063","email":"adriano.ombro@hotmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia/ Dor /Cirurgia de ombro e cotovelo"},{"origem":"RENOVACAO","nome":"Anselmo Alves Boa Sorte Júnior","crm":"27243","telefone":"71 99710-1610","email":"anselmoboasorte@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Neurocirurgia/ Dor"},{"origem":"RENOVACAO","nome":"Barbara Caroline Silva De Siqueira","crm":"29427","telefone":"71 98231-6183","email":"siqueirabcs@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Anestesiologista / Clínica Da Dor"},{"origem":"RENOVACAO","nome":"Breno Leite Luz","crm":"28342","telefone":"71 98181-6048","email":"brenoluz91@hotmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia"},{"origem":"RENOVACAO","nome":"Carla Macedo Ribeiro","crm":"36807","telefone":"71 99647-9765","email":"carlamedufba@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia/ Dor"},{"origem":"RENOVACAO","nome":"Carolina Menezes Uaquim","crm":"33253","telefone":"73 99958-1022","email":"Carolmenezes.u@hotmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Médica Residência - Clínica Médica"},{"origem":"RENOVACAO","nome":"David Sadigursky","crm":"17295","telefone":"71 99985-5588","email":"Davidsad@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia"},{"origem":"RENOVACAO","nome":"Dilton Raimundo Pereira Moraes","crm":"13730","telefone":"71 99936-2080","email":"diltonmoraes@hotmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia/ Clínica da Dor/ Intervencionista em Dor/ Terapia por Ondas de Choque"},{"origem":"RENOVACAO","nome":"Ernest Alves Fialho","crm":"9930","telefone":"71 98871-3013","email":"ernest@ernest.com.br","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia"},{"origem":"RENOVADOS 2025","nome":"FELIPE ALMEIDA RAMOS","crm":"27209","telefone":"75 99966-6025","email":"felipearamos89@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"ANESTESIOLOGIA/DOR"},{"origem":"RENOVACAO","nome":"Fabio Ramos Costa","crm":"15998","telefone":"71 98852-8852","email":"fabiocosta123@uol.com.br","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia"},{"origem":"RENOVACAO","nome":"Francisco Roque Paim Costa Júnior","crm":"22871","telefone":"71 99401-2184","email":"fcostajunior21@hotmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia"},{"origem":"RENOVADOS 2025","nome":"GIORDANO BRUNO DE OLIVEIRA ALVES","crm":"31469","telefone":"71 99185-0827","email":"gbrunoalves@yahoo.com.br","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"DIRETOR","especialidade":"ACUPUNTURA"},{"origem":"RENOVACAO","nome":"João Manoel Zatti Falcão","crm":"35269","telefone":"71 98739-5256","email":"","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia"},{"origem":"RENOVACAO","nome":"Leila Dayane Nobrega Feminella","crm":"32243","telefone":"71 99726-6975","email":"leila.feminella82@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Clínica da dor/ medicina do trabalho/ auditoria médica/ gestão em saúde/ direito médico e da saúde"},{"origem":"RENOVACAO","nome":"Mara Valéria Pereira Mendes","crm":"10932","telefone":"71 98837-7002","email":"maravmendes@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Dor/ Acupuntura/ Ginecologia e Obstetrícia"},{"origem":"RENOVACAO","nome":"Marcos Vinicius Guerreiro Couto","crm":"23621","telefone":"71 99605-6789","email":"mvgcouto@hotmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia"},{"origem":"RENOVACAO","nome":"Marcus Vinícius Modesto Martins","crm":"22605","telefone":"71 99128-8202","email":"mviniciusmed1984@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia"},{"origem":"RENOVACAO","nome":"Mauricio Alcântara Angelim","crm":"11550","telefone":"71 99964-6997","email":"mauricioangelim@hotmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":""},{"origem":"RENOVADOS 2025","nome":"MÁRIO MARTINS SANCHES","crm":"32475","telefone":"75 99123-9831","email":"mario.sanches@uol.com.br","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"SO VAI RENOVAR EM OUTUBRO","especialidade":"ORTOPEDIA E TRAUMATOLOGIA"},{"origem":"RENOVADOS 2025","nome":"NEIDE SCALDAFERRI SAMPAIO COSTA","crm":"12483","telefone":"71 99978-9585","email":"neidescaldaferri@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"DIRETORA","especialidade":"ACUPUNTURA/DOR"},{"origem":"RENOVACAO","nome":"Nathalia Nadir Pereira Ferraz De Melo","crm":"45709","telefone":"81 98630-8001","email":"n.ferraz.melo@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Anestesiologista"},{"origem":"RENOVACAO","nome":"Oduvaldo Pimentel de Figueiredo Filho","crm":"15883","telefone":"71 98101-1362","email":"dr.oduvaldofilho@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia"},{"origem":"RENOVACAO","nome":"Paulo Roberto Gómez Silva","crm":"13904","telefone":"71 98615-7055","email":"gomezpaulo1@hotmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Clínica da dor"},{"origem":"RENOVACAO","nome":"Rodolfo Da Silva Queiroz","crm":"24738","telefone":"71 99153-9838","email":"rodolfodasilvaqueiroz@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Anestesiologista/ Intervenção Em Dor"},{"origem":"RENOVADOS 2025","nome":"SANDRO MAX CASTRO SILVA","crm":"10617","telefone":"71 99194-6360","email":"sandromax65@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"DIRETOR","especialidade":"ORTOPEDIA E TRAUMATOLOGIA/DOR"},{"origem":"RENOVACAO","nome":"Tiago Gravatá De Menezes","crm":"34947","telefone":"71 98104-1431","email":"tgravatah@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Acupuntura/ Dor"},{"origem":"INADIMPLENTES 2024","nome":"VINÍCIUS CALUMBY","crm":"","telefone":"","email":"","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"RENOVADO 2026","especialidade":""},{"origem":"RENOVACAO","nome":"Vinícius Calumby Costa","crm":"23619","telefone":"71 99161-4457","email":"Viniciuscalumby@gmail.com","valor":"300","status":"RENOVADO","etapa":"renovou","observacoes":"","especialidade":"Ortopedia e Traumatologia"}];
+
+    function statusPill(status) {
+      const normalized = String(status || "").toUpperCase();
+      const cls = normalized.includes("RENOV") || status === "Pago" || status === "Disponível" || status === "Publicado" ? "" : normalized.includes("PEND") || normalized.includes("ABERTO") || normalized.includes("REVIS") ? "gold" : "red";
+      return `<span class="pill ${cls}">${status}</span>`;
+    }
+
+    const stageLabels = {
+      renovou: "Já renovou",
+      em_contato: "Em contato",
+      nao_renovou: "Não renovou",
+      sem_retorno: "Sem retorno"
+    };
+
+    function stagePill(stage) {
+      const cls = stage === "renovou" ? "" : stage === "em_contato" ? "blue" : stage === "nao_renovou" ? "red" : "gold";
+      return `<span class="pill ${cls}">${stageLabels[stage]}</span>`;
+    }
+
+    const inviteLabels = {
+      nao_enviado: "Não enviado",
+      enviado: "Enviado",
+      aceito: "Aceito",
+      sem_email: "Sem e-mail",
+      erro: "Erro"
+    };
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, match => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[match]));
+    }
+
+    function invitePill(status) {
+      const cls = status === "aceito" ? "" : status === "enviado" ? "blue" : status === "sem_email" || status === "erro" ? "red" : "gold";
+      return `<span class="pill ${cls}">${inviteLabels[status] || inviteLabels.nao_enviado}</span>`;
+    }
+
+    function makeInviteLink(contact) {
+      const base = (document.getElementById("inviteRedirect")?.value || "https://app.sobramidba.com.br/primeiro-acesso").trim();
+      const email = encodeURIComponent(contact.email || "");
+      const crm = encodeURIComponent(contact.crm || "");
+      return `${base}?email=${email}&crm=${crm}&convite=supabase`;
+    }
+
+    function ensureInviteState() {
+      billingContacts.forEach(contact => {
+        if (!contact.inviteStatus) contact.inviteStatus = contact.email ? "nao_enviado" : "sem_email";
+        if (!contact.email) contact.inviteStatus = "sem_email";
+        if (!contact.inviteSentAt) contact.inviteSentAt = "";
+        if (!contact.inviteLink) contact.inviteLink = makeInviteLink(contact);
+      });
+    }
+
+    function replaceInviteVars(text, contact) {
+      const link = contact.inviteLink || makeInviteLink(contact);
+      return String(text || "")
+        .replaceAll("{nome}", contact.nome || "Associado")
+        .replaceAll("{crm}", contact.crm || "não informado")
+        .replaceAll("{email}", contact.email || "não informado")
+        .replaceAll("{link}", link);
+    }
+
+    function inviteEmailText(contact) {
+      const subject = document.getElementById("inviteSubject")?.value || "Seu acesso ao SOBRAMID-BA Conecta";
+      const body = document.getElementById("inviteBody")?.value || "";
+      return `Assunto: ${replaceInviteVars(subject, contact)}\n\n${replaceInviteVars(body, contact)}`;
+    }
+
+    function renderInviteTemplatePreview(contact = billingContacts.find(item => item.email) || billingContacts[0]) {
+      ensureInviteState();
+      const preview = document.getElementById("invitePreview");
+      if (preview && contact) preview.textContent = inviteEmailText(contact);
+    }
+
+    function renderInviteStats(list = billingContacts) {
+      const counts = { nao_enviado: 0, enviado: 0, aceito: 0, sem_email: 0, erro: 0 };
+      list.forEach(item => counts[item.inviteStatus] = (counts[item.inviteStatus] || 0) + 1);
+      const board = document.getElementById("inviteStages");
+      if (!board) return;
+      board.innerHTML = Object.entries(inviteLabels).map(([key, label]) => `<div class="stage-card"><span>${label}</span><b>${counts[key] || 0}</b></div>`).join("");
+    }
+
+    function renderInvites() {
+      ensureInviteState();
+      const q = (document.getElementById("inviteSearch")?.value || "").toLowerCase();
+      const status = document.getElementById("inviteFilter")?.value || "";
+      const filtered = billingContacts.filter(contact => {
+        const haystack = `${contact.nome} ${contact.crm} ${contact.email}`.toLowerCase();
+        return (!status || contact.inviteStatus === status) && haystack.includes(q);
+      });
+      renderInviteStats(filtered);
+      const rows = document.getElementById("inviteRows");
+      if (!rows) return;
+      rows.innerHTML = filtered.map(contact => {
+        const index = billingContacts.indexOf(contact);
+        const sentNote = contact.inviteSentAt ? `Enviado em ${contact.inviteSentAt}` : "Ainda não enviado";
+        const disabled = contact.email ? "" : "disabled";
+        return `<tr>
+          <td><b>${escapeHtml(contact.nome)}</b><span class="note">${contact.crm ? `CRM-BA ${escapeHtml(contact.crm)}` : "CRM não informado"} · ${escapeHtml(contact.especialidade || contact.origem)}</span></td>
+          <td>${escapeHtml(contact.email || "Sem e-mail cadastrado")}<span class="note">${escapeHtml(contact.origem)}</span></td>
+          <td>${invitePill(contact.inviteStatus)}<span class="note">${sentNote}</span></td>
+          <td><div class="row-actions"><button class="btn" ${disabled} onclick="sendInvite(${index})">${contact.inviteStatus === "enviado" ? "Reenviar" : "Enviar convite"}</button><button class="ghost" ${disabled} onclick="copyInviteLink(${index})">Copiar link</button><button class="ghost" onclick="previewInvite(${index})">Prévia</button><button class="ghost" ${disabled} onclick="markInviteAccepted(${index})">Marcar aceito</button></div></td>
+        </tr>`;
+      }).join("");
+      renderInviteTemplatePreview(filtered[0]);
+    }
+
+    function saveInviteTemplate(event) {
+      event.preventDefault();
+      billingContacts.forEach(contact => contact.inviteLink = makeInviteLink(contact));
+      renderInvites();
+      toast("Template de convite salvo no protótipo.");
+    }
+
+    async function sendInviteViaApi(contact) {
+      if (location.protocol === "file:") return { ok: true, simulated: true };
+      const response = await fetch("/api/invite", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: contact.email,
+          nome: contact.nome,
+          crm: contact.crm,
+          redirectTo: document.getElementById("inviteRedirect")?.value || "",
+          template: {
+            subject: document.getElementById("inviteSubject")?.value || "",
+            body: document.getElementById("inviteBody")?.value || ""
+          }
+        })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Falha ao enviar convite");
+      return data;
+    }
+
+    async function sendInvite(index) {
+      const contact = billingContacts[index];
+      if (!contact?.email) {
+        if (contact) contact.inviteStatus = "sem_email";
+        renderInvites();
+        toast("Cadastre um e-mail antes de enviar o convite.");
+        return;
+      }
+      try {
+        await sendInviteViaApi(contact);
+        contact.inviteStatus = "enviado";
+        contact.inviteSentAt = new Date().toLocaleDateString("pt-BR");
+        contact.inviteLink = makeInviteLink(contact);
+        renderInvites();
+        renderMembers();
+        toast(location.protocol === "file:" ? `Convite preparado para ${contact.nome}.` : `Convite enviado para ${contact.nome}.`);
+      } catch (error) {
+        contact.inviteStatus = "erro";
+        renderInvites();
+        toast(error.message);
+      }
+    }
+
+    async function sendInviteBatch() {
+      let total = 0;
+      let errors = 0;
+      ensureInviteState();
+      for (const contact of billingContacts) {
+        if (contact.email && contact.inviteStatus !== "aceito") {
+          try {
+            await sendInviteViaApi(contact);
+            contact.inviteStatus = "enviado";
+            contact.inviteSentAt = new Date().toLocaleDateString("pt-BR");
+            contact.inviteLink = makeInviteLink(contact);
+            total += 1;
+          } catch {
+            contact.inviteStatus = "erro";
+            errors += 1;
+          }
+        }
+      }
+      renderInvites();
+      renderMembers();
+      toast(errors ? `${total} convites enviados/preparados; ${errors} com erro.` : `${total} convites enviados/preparados.`);
+    }
+
+    function copyInviteLink(index) {
+      const contact = billingContacts[index];
+      if (!contact?.email) {
+        toast("Associado sem e-mail cadastrado.");
+        return;
+      }
+      contact.inviteLink = makeInviteLink(contact);
+      navigator.clipboard?.writeText(contact.inviteLink);
+      toast("Link de convite copiado.");
+    }
+
+    function previewInvite(index) {
+      const contact = billingContacts[index];
+      renderInviteTemplatePreview(contact);
+      toast("Prévia atualizada.");
+    }
+
+    function markInviteAccepted(index) {
+      const contact = billingContacts[index];
+      if (!contact?.email) {
+        toast("Associado sem e-mail cadastrado.");
+        return;
+      }
+      contact.inviteStatus = "aceito";
+      contact.inviteSentAt = contact.inviteSentAt || new Date().toLocaleDateString("pt-BR");
+      renderInvites();
+      renderMembers();
+      toast("Convite marcado como aceito.");
+    }
+
+    function phoneDigits(phone) {
+      const digits = String(phone || "").replace(/\D/g, "");
+      if (!digits) return "";
+      return digits.startsWith("55") ? digits : `55${digits}`;
+    }
+
+    function firstName(name) {
+      return String(name || "doutor(a)").trim().split(/\s+/)[0];
+    }
+
+    function billingMessage(contact) {
+      const crmText = contact.crm ? `CRM-BA ${contact.crm}` : "CRM não informado";
+      if (contact.etapa === "renovou") {
+        return `Olá, Dr(a). ${firstName(contact.nome)}. Aqui é da SOBRAMID-BA. Identificamos sua renovação de anuidade vinculada ao ${crmText}. Muito obrigado por seguir conosco fortalecendo a Medicina da Dor na Bahia.`;
+      }
+      if (contact.etapa === "em_contato") {
+        return `Olá, Dr(a). ${firstName(contact.nome)}. Aqui é da SOBRAMID-BA. Estamos dando continuidade ao contato sobre a renovação da sua anuidade 2026, vinculada ao ${crmText}. Podemos ajudar com as informações para regularização?`;
+      }
+      if (contact.etapa === "nao_renovou") {
+        return `Olá, Dr(a). ${firstName(contact.nome)}. Aqui é da SOBRAMID-BA. Consta para nós que sua anuidade 2026, vinculada ao ${crmText}, ainda não foi renovada. Caso deseje regularizar, podemos encaminhar os dados para pagamento.`;
+      }
+      return `Olá, Dr(a). ${firstName(contact.nome)}. Aqui é da SOBRAMID-BA. Não conseguimos retorno sobre a renovação da sua anuidade 2026, vinculada ao ${crmText}. Podemos confirmar seu interesse em permanecer associado(a)?`;
+    }
+
+    function whatsappUrl(contact) {
+      const phone = phoneDigits(contact.telefone);
+      const text = encodeURIComponent(billingMessage(contact));
+      return phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`;
+    }
+
+    function changeBillingStage(index, value) {
+      billingContacts[index].etapa = value;
+      billingContacts[index].status = value === "renovou" ? "RENOVADO" : value === "nao_renovou" ? "NÃO RENOVOU" : value === "em_contato" ? "EM CONTATO" : "SEM RETORNO";
+      renderMembers();
+      renderBilling();
+      toast("Etapa atualizada no CRM.");
+    }
+
+    function memberStatusFromStage(stage) {
+      if (stage === "renovou") return "RENOVADO";
+      if (stage === "em_contato") return "EM CONTATO";
+      if (stage === "nao_renovou") return "NÃO RENOVOU";
+      return "SEM RETORNO";
+    }
+
+    function newMember() {
+      document.getElementById("memberEditorTitle").textContent = "Novo associado";
+      document.getElementById("memberForm").reset();
+      document.getElementById("memberIndex").value = "";
+      document.getElementById("memberValue").value = "300";
+      document.getElementById("memberStage").value = "sem_retorno";
+      document.getElementById("memberStatus").value = "Pendente";
+      toast("Formulário pronto para novo cadastro.");
+    }
+
+    function editMember(index) {
+      const contact = billingContacts[index];
+      document.getElementById("memberEditorTitle").textContent = `Editando ${contact.nome}`;
+      document.getElementById("memberIndex").value = index;
+      document.getElementById("memberName").value = contact.nome || "";
+      document.getElementById("memberCrm").value = contact.crm || "";
+      document.getElementById("memberPhone").value = contact.telefone || "";
+      document.getElementById("memberEmail").value = contact.email || "";
+      document.getElementById("memberSpecialty").value = contact.especialidade || "";
+      document.getElementById("memberCategory").value = contact.categoria || (String(contact.observacoes || "").toUpperCase().includes("DIRETOR") ? "Diretoria" : "Titular");
+      document.getElementById("memberStatus").value = contact.cadastroStatus || "Ativo";
+      document.getElementById("memberStage").value = contact.etapa || "sem_retorno";
+      document.getElementById("memberValue").value = contact.valor || "300";
+      document.getElementById("memberNotes").value = contact.observacoes || "";
+      go("members");
+      toast("Cadastro carregado para edição.");
+    }
+
+    function saveMember(event) {
+      event.preventDefault();
+      const indexValue = document.getElementById("memberIndex").value;
+      const previous = indexValue === "" ? null : billingContacts[Number(indexValue)];
+      const email = document.getElementById("memberEmail").value.trim();
+      const contact = {
+        origem: indexValue === "" ? "CADASTRO ADM" : previous.origem,
+        nome: document.getElementById("memberName").value.trim(),
+        crm: document.getElementById("memberCrm").value.replace(/^CRM-?BA\s*/i, "").trim(),
+        telefone: document.getElementById("memberPhone").value.trim(),
+        email,
+        valor: document.getElementById("memberValue").value.trim() || "300",
+        status: memberStatusFromStage(document.getElementById("memberStage").value),
+        etapa: document.getElementById("memberStage").value,
+        observacoes: document.getElementById("memberNotes").value.trim(),
+        especialidade: document.getElementById("memberSpecialty").value.trim(),
+        categoria: document.getElementById("memberCategory").value,
+        cadastroStatus: document.getElementById("memberStatus").value,
+        inviteStatus: previous?.inviteStatus || (email ? "nao_enviado" : "sem_email"),
+        inviteSentAt: previous?.inviteSentAt || "",
+        inviteLink: previous?.inviteLink || ""
+      };
+      if (!email) contact.inviteStatus = "sem_email";
+      if (!contact.nome) {
+        toast("Informe o nome do associado.");
+        return;
+      }
+      if (indexValue === "") {
+        billingContacts.unshift(contact);
+        document.getElementById("memberIndex").value = "0";
+      } else {
+        billingContacts[Number(indexValue)] = contact;
+      }
+      renderMembers();
+      renderInvites();
+      renderBilling();
+      document.getElementById("metricMembers").textContent = billingContacts.length;
+      toast("Cadastro do associado salvo no painel.");
+    }
+
+    function renderMembers() {
+      ensureInviteState();
+      const q = (document.getElementById("memberSearch")?.value || "").toLowerCase();
+      const stage = document.getElementById("memberStageFilter")?.value || "";
+      const filtered = billingContacts.filter(contact => {
+        const haystack = `${contact.nome} ${contact.crm} ${contact.telefone} ${contact.email} ${contact.especialidade} ${contact.origem}`.toLowerCase();
+        return (!stage || contact.etapa === stage) && haystack.includes(q);
+      });
+      document.getElementById("metricMembers").textContent = billingContacts.length;
+      document.getElementById("membersRows").innerHTML = filtered.map(contact => {
+        const index = billingContacts.indexOf(contact);
+        return `<tr>
+          <td><b>${contact.nome}</b><span class="note">${contact.crm ? `CRM-BA ${contact.crm}` : "CRM não informado"} · ${contact.especialidade || "Especialidade não informada"}</span></td>
+          <td>${contact.telefone || "Sem telefone"}<span class="note">${contact.email || "Sem e-mail"}</span></td>
+          <td>${contact.origem}<span class="note">${contact.categoria || "Titular"} · ${contact.cadastroStatus || "Ativo"} · ${inviteLabels[contact.inviteStatus] || "Convite pendente"}</span></td>
+          <td>${stagePill(contact.etapa)}<span class="note">R$ ${contact.valor || "300"}</span></td>
+          <td><div class="row-actions"><button class="ghost" onclick="editMember(${index})">Editar cadastro</button><button class="ghost" onclick="previewInvite(${index}); go('invites')">Convite</button><a class="btn whatsapp" href="${whatsappUrl(contact)}" target="_blank" rel="noopener">WhatsApp</a><button class="ghost" onclick="toast('${(contact.observacoes || "Sem observações").replace(/'/g, "\\'")}')">Obs.</button></div></td>
+        </tr>`;
+      }).join("");
+    }
+
+    function renderBillingStages(list = billingContacts) {
+      const counts = { renovou: 0, em_contato: 0, nao_renovou: 0, sem_retorno: 0 };
+      list.forEach(item => counts[item.etapa] = (counts[item.etapa] || 0) + 1);
+      document.getElementById("billingStages").innerHTML = Object.entries(stageLabels).map(([key, label]) => `<div class="stage-card"><span>${label}</span><b>${counts[key] || 0}</b></div>`).join("");
+      const open = (counts.em_contato || 0) + (counts.nao_renovou || 0) + (counts.sem_retorno || 0);
+      document.getElementById("metricOpenBilling").textContent = open;
+      document.getElementById("criticalBilling").textContent = `${open} cobranças de anuidade aguardando resolução`;
+    }
+
+    function renderBilling() {
+      const q = (document.getElementById("billingSearch")?.value || "").toLowerCase();
+      const stage = document.getElementById("billingFilter")?.value || "";
+      const filtered = billingContacts.filter(contact => {
+        const haystack = `${contact.nome} ${contact.crm} ${contact.telefone} ${contact.email} ${contact.status}`.toLowerCase();
+        return (!stage || contact.etapa === stage) && haystack.includes(q);
+      });
+      renderBillingStages(filtered);
+      document.getElementById("billingRows").innerHTML = filtered.map((contact) => {
+        const originalIndex = billingContacts.indexOf(contact);
+        const contactLine = contact.telefone ? `${contact.telefone}<span class="note">${contact.email || "Sem e-mail"}</span>` : `Sem telefone<span class="note">${contact.email || "Sem e-mail"}</span>`;
+        return `<tr>
+          <td><b>${contact.nome}</b><span class="note">${contact.crm ? `CRM-BA ${contact.crm}` : "CRM não informado"} · ${contact.especialidade || contact.origem}</span></td>
+          <td>${contactLine}</td>
+          <td>R$ ${contact.valor || "300"}<span class="note">${contact.status} · ${contact.origem}</span></td>
+          <td><select class="stage-select" onchange="changeBillingStage(${originalIndex}, this.value)">
+            ${Object.entries(stageLabels).map(([key, label]) => `<option value="${key}" ${contact.etapa === key ? "selected" : ""}>${label}</option>`).join("")}
+          </select></td>
+          <td><div class="row-actions"><a class="btn whatsapp" href="${whatsappUrl(contact)}" target="_blank" rel="noopener">Entrar em contato</a><button class="ghost" onclick="toast('Mensagem: ${billingMessage(contact).replace(/'/g, "\\'")}')">Ver mensagem</button></div></td>
+        </tr>`;
+      }).join("");
+    }
+
+    function copyBillingMessage() {
+      const model = "Olá, Dr(a). [Nome]. Aqui é da SOBRAMID-BA. Estamos entrando em contato sobre a renovação da sua anuidade 2026 vinculada ao CRM-BA [CRM]. Podemos encaminhar os dados para regularização?";
+      navigator.clipboard?.writeText(model);
+      toast("Modelo de mensagem copiado.");
+    }
+
+    function renderNav() {
+      document.getElementById("nav").innerHTML = sections.map(([id, label]) => `<button data-go="${id}" onclick="go('${id}')">${label}</button>`).join("");
+      document.getElementById("mobileTabs").innerHTML = sections.map(([id, label]) => `<button data-go="${id}" onclick="go('${id}')">${label.split(" ")[0]}</button>`).join("");
+    }
+
+    function go(id) {
+      document.querySelectorAll(".section").forEach(section => section.classList.toggle("active", section.id === id));
+      const section = document.getElementById(id);
+      document.getElementById("title").textContent = section.dataset.title;
+      document.getElementById("subtitle").textContent = section.dataset.subtitle;
+      document.querySelectorAll("[data-go]").forEach(button => button.classList.toggle("active", button.dataset.go === id));
+      scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function login(event) {
+      event.preventDefault();
+      const password = document.getElementById("password").value;
+      if (password !== "admin") {
+        toast("Senha incorreta neste protótipo.");
+        return;
+      }
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("app").classList.add("unlocked");
+      go("overview");
+      toast("Acesso administrativo liberado.");
+    }
+
+    function logout() {
+      document.getElementById("app").classList.remove("unlocked");
+      document.getElementById("login").classList.remove("hidden");
+      toast("Sessão administrativa encerrada.");
+    }
+
+    function fakeSave(event, message) {
+      event.preventDefault();
+      toast(message + ".");
+    }
+
+    function toast(message) {
+      const box = document.getElementById("toast");
+      box.textContent = message;
+      box.classList.add("show");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => box.classList.remove("show"), 2600);
+    }
+
+    function actions() {
+      return `<div class="row-actions"><button class="ghost" onclick="toast('Editando registro.')">Editar</button><button class="ghost" onclick="toast('Histórico aberto.')">Histórico</button><button class="ghost" onclick="toast('Registro atualizado.')">Status</button></div>`;
+    }
+
+    function renderTables() {
+      ensureInviteState();
+      renderMembers();
+      document.getElementById("certRows").innerHTML = certs.map(([title, member, status]) => `<tr><td><b>${title}</b><span class="note">Código SBBA-2026</span></td><td>${member}</td><td>${statusPill(status)}</td><td>${actions()}</td></tr>`).join("");
+      document.getElementById("libraryRows").innerHTML = library.map(([title, topic, status]) => `<tr><td><b>${title}</b><span class="note">Área fechada para associados</span></td><td>${topic}</td><td>${statusPill(status)}</td><td>${actions()}</td></tr>`).join("");
+      document.getElementById("eventCards").innerHTML = ["Simpósio baiano de dor crônica", "Curso de bloqueios guiados por imagem", "Webinar: dor neuropática", "Encontro regional de Medicina da Dor"].map((title, i) => `<article class="mini"><h3>${title}</h3><p>${i < 2 ? "Inscrições abertas" : "Programado"} · Controle de palestrantes, materiais, QR Code e certificados.</p><br><div class="row-actions">${actions()}</div></article>`).join("");
+      document.getElementById("noticeCards").innerHTML = ["Convocação para assembleia ordinária", "Atualização cadastral 2026", "Campanha institucional sobre dor crônica"].map(title => `<article class="mini"><h3>${title}</h3><p>Publicado para associados · leitura acompanhada no painel.</p><br><div class="row-actions">${actions()}</div></article>`).join("");
+      renderInvites();
+      renderBilling();
+    }
+
+    renderNav();
+    renderTables();
+  </script>
+</body>
+</html>
