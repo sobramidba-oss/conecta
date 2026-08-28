@@ -96,9 +96,10 @@
     }
 
     .app {
-      min-height: 100vh;
+      height: 100vh;
       display: none;
       grid-template-columns: 264px minmax(0, 1fr);
+      overflow: hidden;
     }
     .app.unlocked { display: grid; }
     .login.hidden { display: none; }
@@ -107,6 +108,7 @@
       position: sticky;
       top: 0;
       height: 100vh;
+      overflow-y: auto;
       padding: 22px 16px;
       background: var(--deep);
       color: #fff;
@@ -144,7 +146,12 @@
       justify-content: center;
     }
 
-    main { min-width: 0; padding: 24px clamp(16px, 3vw, 34px); }
+    main {
+      min-width: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 24px clamp(16px, 3vw, 34px);
+    }
     .top {
       display: flex;
       justify-content: space-between;
@@ -274,6 +281,32 @@
       border-radius: 8px;
       background: #fff;
     }
+    .members-grid {
+      height: calc(100vh - 100px);
+      align-items: stretch;
+    }
+    .member-editor-card,
+    .member-list-card {
+      min-height: 0;
+      overflow: hidden;
+    }
+    .member-editor-card {
+      overflow-y: auto;
+    }
+    .member-list-card {
+      display: flex;
+      flex-direction: column;
+    }
+    .member-list-card .table-wrap {
+      flex: 1;
+      min-height: 0;
+      overflow: auto;
+    }
+    .member-list-card thead th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -346,9 +379,19 @@
 
     @media (max-width: 980px) {
       .app { display: none; }
-      .app.unlocked { display: block; padding-bottom: 76px; }
+      .app.unlocked {
+        display: block;
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
+        padding-bottom: 76px;
+      }
       .side { display: none; }
-      main { padding: 14px 12px; }
+      main {
+        height: auto;
+        overflow: visible;
+        padding: 14px 12px;
+      }
       .top {
         position: sticky;
         top: 0;
@@ -361,6 +404,15 @@
       }
       .top h1 { font-size: 22px; }
       .grid { grid-template-columns: 1fr; gap: 12px; }
+      .members-grid { height: auto; }
+      .member-editor-card,
+      .member-list-card {
+        overflow: visible;
+      }
+      .member-list-card .table-wrap {
+        max-height: none;
+        overflow-x: auto;
+      }
       .span-3, .span-4, .span-5, .span-6, .span-7, .span-8, .span-12 { grid-column: 1 / -1; }
       .editor { grid-template-columns: 1fr; }
       .toolbar { display: grid; grid-template-columns: 1fr; }
@@ -497,8 +549,8 @@
       </section>
 
       <section class="section" id="members" data-title="Associados" data-subtitle="Inclua, edite, valide e bloqueie acessos de associados.">
-        <div class="grid">
-          <div class="card span-4">
+        <div class="grid members-grid">
+          <div class="card span-4 member-editor-card">
             <div class="head"><div><h2 id="memberEditorTitle">Novo associado</h2><p>Edite os dados usados no diretório, carteira digital e CRM de cobrança.</p></div></div>
             <form class="editor" id="memberForm" onsubmit="saveMember(event)">
               <input type="hidden" id="memberIndex" value="" />
@@ -518,7 +570,7 @@
               </div>
             </form>
           </div>
-          <div class="card span-8">
+          <div class="card span-8 member-list-card">
             <div class="head"><div><h2>Base de associados</h2><p>Controle total dos perfis que aparecem no app.</p></div><button class="btn" onclick="go('invites')">Gerenciar convites</button></div>
             <div class="toolbar"><input id="memberSearch" placeholder="Buscar por nome, CRM, telefone, e-mail ou especialidade" oninput="renderMembers()" /><select id="memberStageFilter" onchange="renderMembers()"><option value="">Todas as etapas</option><option value="renovou">Já renovou</option><option value="em_contato">Em contato</option><option value="nao_renovou">Não renovou</option><option value="sem_retorno">Sem retorno</option></select></div>
             <div class="table-wrap">
