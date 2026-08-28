@@ -10,6 +10,16 @@ Aplicativo estático com área do associado e painel administrativo separado.
 
 ## Deploy na Vercel
 
+Na tela de importacao da Vercel, use:
+
+```txt
+Framework Preset: Other
+Root Directory: ./
+Build Command: npm run build
+Output Directory: public
+Install Command: npm install
+```
+
 Configure as variáveis de ambiente no projeto da Vercel:
 
 ```txt

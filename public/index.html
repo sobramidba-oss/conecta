@@ -1,0 +1,1183 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SOBRAMID-BA Conecta</title>
+  <style>
+    :root {
+      --ink: #002866;
+      --muted: #596a84;
+      --line: #d7dfeb;
+      --paper: #ffffff;
+      --wash: #f5f8fc;
+      --deep: #003070;
+      --blue: #073b83;
+      --blue-2: #0a4a95;
+      --red: #c80000;
+      --red-2: #e21a1a;
+      --gold: #c8a24b;
+      --danger: #c80000;
+      --shadow: 0 18px 50px rgba(0, 48, 112, .14);
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      overflow-x: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: linear-gradient(180deg, #eef3fa 0%, #fbfcff 48%, #eef3fa 100%);
+      overflow-x: hidden;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    img { max-width: 100%; }
+
+    .app {
+      display: grid;
+      grid-template-columns: 264px minmax(0, 1fr) 360px;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 24px 18px;
+      background: var(--deep);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .brand {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 6px 8px 10px;
+    }
+
+    .brand-logo {
+      display: block;
+      width: 148px;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .brand b {
+      display: block;
+      font-size: 15px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .brand small { color: #c3d2e6; }
+
+    .nav {
+      display: grid;
+      gap: 6px;
+    }
+
+    .nav button {
+      border: 0;
+      background: transparent;
+      color: #dbe6ef;
+      min-height: 44px;
+      padding: 0 12px;
+      border-radius: 8px;
+      display: grid;
+      grid-template-columns: 22px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      text-align: left;
+    }
+
+    .nav button:hover, .nav button.active {
+      background: rgba(255, 255, 255, .1);
+      color: #fff;
+    }
+
+    .nav button.active { box-shadow: inset 3px 0 0 var(--red); }
+    .badge {
+      min-width: 22px;
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 99px;
+      background: var(--red);
+      color: #fff;
+      display: inline-grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .sidebar-card {
+      margin-top: auto;
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    .sidebar-card strong { display: block; margin-bottom: 6px; }
+    .sidebar-card p { margin: 0; color: #c9d5df; font-size: 13px; line-height: 1.45; }
+    .admin-access {
+      margin-top: 12px;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.18);
+      color: #fff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(200, 0, 0, .32);
+    }
+
+    main {
+      min-width: 0;
+      padding: 26px clamp(18px, 3vw, 38px);
+    }
+
+    .topbar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .topbar-title {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 14px;
+    }
+
+    .topbar-logo {
+      display: none;
+      width: 106px;
+      height: auto;
+      border-radius: 2px;
+    }
+
+    .topbar h1 { margin: 0; font-size: 28px; line-height: 1.1; }
+    .topbar p { margin: 7px 0 0; color: var(--muted); }
+
+    .tools {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .icon-btn, .primary, .ghost {
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 40px;
+      border-radius: 8px;
+      padding: 0 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 8px 20px rgba(20, 27, 56, .06);
+    }
+    .icon-btn { width: 40px; padding: 0; }
+    .primary {
+      border-color: var(--red);
+      background: var(--red);
+      color: #fff;
+      font-weight: 700;
+    }
+    .ghost { box-shadow: none; background: transparent; }
+
+    .hero {
+      min-height: 230px;
+      background:
+        linear-gradient(90deg, rgba(0, 48, 112, .94), rgba(0, 48, 112, .82)),
+        repeating-linear-gradient(135deg, rgba(255,255,255,.08) 0 1px, transparent 1px 18px),
+        linear-gradient(135deg, var(--deep), var(--blue));
+      color: #fff;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.18);
+      padding: 28px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(260px, .9fr);
+      gap: 24px;
+      align-items: center;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -42px -82px auto;
+      width: 312px;
+      height: 312px;
+      border: 18px solid rgba(255, 255, 255, .12);
+      border-radius: 50%;
+    }
+
+    .hero-logo {
+      width: 174px;
+      max-width: 58vw;
+      height: auto;
+      margin-bottom: 18px;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.18));
+    }
+
+    .hero h2 {
+      margin: 0 0 10px;
+      font-size: 34px;
+      line-height: 1.05;
+      max-width: 640px;
+    }
+    .hero p { margin: 0; color: #dcecf5; line-height: 1.55; max-width: 640px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 22px;
+      max-width: 620px;
+    }
+
+    .stat {
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .08);
+    }
+    .stat b { display: block; font-size: 22px; }
+    .stat span { color: #c9dce8; font-size: 12px; }
+
+    .card, .panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(20, 27, 56, .07);
+    }
+    .panel { padding: 18px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .span-4 { grid-column: span 4; }
+    .span-5 { grid-column: span 5; }
+    .span-6 { grid-column: span 6; }
+    .span-7 { grid-column: span 7; }
+    .span-8 { grid-column: span 8; }
+    .span-12 { grid-column: span 12; }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 12px;
+      margin: 0 0 14px;
+    }
+    .section-head h2 { margin: 0; font-size: 21px; }
+    .section-head p { margin: 5px 0 0; color: var(--muted); }
+
+    .member-card {
+      height: 100%;
+      padding: 18px;
+      color: #fff;
+      border: 0;
+      background:
+        linear-gradient(135deg, rgba(0, 40, 102, .98), rgba(0, 48, 112, .94)),
+        repeating-linear-gradient(45deg, transparent 0 9px, rgba(255,255,255,.06) 9px 10px);
+      overflow: hidden;
+      position: relative;
+    }
+    .member-card::after {
+      content: "";
+      position: absolute;
+      right: 18px;
+      bottom: 18px;
+      width: 92px;
+      height: 92px;
+      background:
+        linear-gradient(90deg, #fff 8px, transparent 8px 14px, #fff 14px 22px, transparent 22px),
+        linear-gradient(#fff 8px, transparent 8px 14px, #fff 14px 22px, transparent 22px);
+      opacity: .9;
+      border: 10px solid #fff;
+      border-radius: 6px;
+    }
+    .member-card h3 { margin: 24px 0 4px; font-size: 24px; }
+    .member-card p { margin: 0; color: #d9edf6; }
+    .member-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+      max-width: calc(100% - 118px);
+    }
+    .member-meta span { display: block; color: #bdd7e7; font-size: 12px; }
+    .member-meta b { display: block; margin-top: 3px; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 99px;
+      background: #eef3fb;
+      color: var(--deep);
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .pill.blue { background: #e7effa; color: var(--blue); }
+    .pill.gold { background: #fff5d8; color: #7e5f10; }
+    .pill.red { background: #ffe9e8; color: var(--red); }
+
+    .list {
+      display: grid;
+      gap: 12px;
+    }
+    .item {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      display: grid;
+      gap: 8px;
+    }
+    .item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .item h3 { margin: 0; font-size: 16px; }
+    .item p { margin: 0; color: var(--muted); line-height: 1.45; }
+
+    .datebox {
+      width: 54px;
+      min-width: 54px;
+      height: 58px;
+      border-radius: 8px;
+      background: var(--deep);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      line-height: 1;
+      font-weight: 800;
+    }
+    .datebox small { display: block; color: #aee7d4; font-size: 11px; margin-bottom: 5px; }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .search, select {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 8px;
+      padding: 0 12px;
+      color: var(--ink);
+    }
+    .search { flex: 1 1 260px; }
+
+    .library-grid, .people-grid, .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .mini-card {
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      min-height: 142px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .mini-card h3 { margin: 0; font-size: 16px; }
+    .mini-card p { margin: 0; color: var(--muted); line-height: 1.4; font-size: 14px; }
+
+    .right {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 26px 22px;
+      background: rgba(255,255,255,.7);
+      border-left: 1px solid var(--line);
+      overflow: auto;
+    }
+
+    .profile {
+      display: grid;
+      grid-template-columns: 52px 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+    .avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--red), var(--deep));
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+    }
+    .profile b, .profile span { display: block; }
+    .profile span { color: var(--muted); font-size: 13px; margin-top: 3px; }
+
+    .progress {
+      height: 9px;
+      background: #e7edf3;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress span {
+      display: block;
+      width: 78%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--red), var(--blue-2));
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+      margin-top: 12px;
+    }
+    .time {
+      display: grid;
+      grid-template-columns: 12px 1fr;
+      gap: 10px;
+    }
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+      margin-top: 5px;
+      box-shadow: 0 0 0 5px rgba(200, 0, 0, .12);
+    }
+    .time b { display: block; font-size: 14px; }
+    .time span { display: block; color: var(--muted); font-size: 13px; margin-top: 3px; line-height: 1.35; }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      max-width: 340px;
+      background: var(--deep);
+      color: #fff;
+      padding: 14px 16px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      transform: translateY(24px);
+      opacity: 0;
+      pointer-events: none;
+      transition: .24s ease;
+      z-index: 20;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    .mobile-bar { display: none; }
+    .mobile-more-panel { display: none; }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @media (max-width: 1180px) {
+      .app { grid-template-columns: 232px minmax(0, 1fr); }
+      .right {
+        position: static;
+        height: auto;
+        grid-column: 2;
+        border-left: 0;
+        border-top: 1px solid var(--line);
+      }
+      .hero { grid-template-columns: 1fr; }
+      .library-grid, .people-grid, .benefits-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 860px) {
+      body { background: #f5f8fc; }
+      .app {
+        display: block;
+        padding-bottom: calc(82px + env(safe-area-inset-bottom));
+      }
+      .sidebar { display: none; }
+      main { padding: 12px 12px 18px; }
+      .right {
+        padding: 12px 12px 18px;
+        background: transparent;
+        border-top: 0;
+      }
+      .topbar {
+        position: sticky;
+        top: 0;
+        z-index: 9;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        margin: -12px -12px 14px;
+        padding: 10px 12px 12px;
+        background: rgba(245, 248, 252, .96);
+        border-bottom: 1px solid rgba(0, 48, 112, .1);
+        backdrop-filter: blur(12px);
+      }
+      .topbar-title {
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 10px;
+      }
+      .topbar-logo { display: block; width: 92px; }
+      .topbar h1 { font-size: 22px; }
+      .topbar p { font-size: 13px; line-height: 1.35; }
+      .tools {
+        display: grid;
+        grid-template-columns: 44px 44px minmax(0, 1fr);
+        gap: 8px;
+        justify-content: stretch;
+      }
+      .icon-btn {
+        width: 44px;
+        min-height: 42px;
+      }
+      .primary, .ghost {
+        min-height: 42px;
+        padding: 0 12px;
+      }
+      .tools .primary { width: 100%; }
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding: 18px;
+        min-height: 0;
+      }
+      .hero::after {
+        width: 190px;
+        height: 190px;
+        border-width: 12px;
+        right: -68px;
+        bottom: -70px;
+      }
+      .hero-logo {
+        width: 132px;
+        margin-bottom: 14px;
+      }
+      .hero h2 {
+        font-size: 24px;
+        line-height: 1.12;
+      }
+      .hero p { font-size: 14px; }
+      .stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-top: 16px;
+      }
+      .stat { padding: 10px 8px; }
+      .stat b { font-size: 20px; }
+      .stat span { font-size: 11px; }
+      .member-card {
+        min-height: 270px;
+        padding: 16px;
+      }
+      .member-card::after {
+        width: 72px;
+        height: 72px;
+        border-width: 8px;
+        right: 14px;
+        bottom: 14px;
+      }
+      .member-card h3 {
+        margin-top: 18px;
+        font-size: 21px;
+      }
+      .stats, .member-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .member-meta {
+        max-width: calc(100% - 86px);
+        gap: 10px;
+        margin-top: 18px;
+        padding-bottom: 0;
+      }
+      .span-4, .span-5, .span-6, .span-7, .span-8, .span-12 { grid-column: 1 / -1; }
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 12px;
+      }
+      .library-grid, .people-grid, .benefits-grid { grid-template-columns: 1fr; }
+      .panel { padding: 14px; }
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .section-head h2 { font-size: 18px; }
+      .section-head p { font-size: 13px; line-height: 1.35; }
+      .filters {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .search, select {
+        width: 100%;
+        min-height: 44px;
+      }
+      .item {
+        padding: 12px;
+        gap: 10px;
+      }
+      .item-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+      .item-row > div[style*="display:flex"] {
+        align-items: flex-start !important;
+      }
+      .item-row .pill,
+      .item-row button {
+        align-self: flex-start;
+      }
+      .mini-card {
+        min-height: 0;
+        padding: 14px;
+      }
+      .profile {
+        grid-template-columns: 44px minmax(0, 1fr);
+        margin-bottom: 12px;
+      }
+      .avatar {
+        width: 44px;
+        height: 44px;
+      }
+      .mobile-bar {
+        position: fixed;
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10;
+        background: #fff;
+        border-top: 1px solid var(--line);
+        box-shadow: 0 -12px 30px rgba(20, 27, 56, .09);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .mobile-bar button {
+        border: 0;
+        background: #fff;
+        min-height: 62px;
+        color: var(--muted);
+        display: grid;
+        place-items: center;
+        align-content: center;
+        gap: 4px;
+        font-size: 10px;
+        line-height: 1.1;
+        padding: 6px 2px;
+        min-width: 0;
+      }
+      .mobile-bar .icon {
+        width: 20px;
+        height: 20px;
+      }
+      .mobile-bar button.active { color: var(--red); font-weight: 800; }
+      .mobile-more-panel {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: calc(74px + env(safe-area-inset-bottom));
+        z-index: 11;
+        display: none;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        padding: 10px;
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        box-shadow: 0 18px 44px rgba(0, 48, 112, .18);
+      }
+      .mobile-more-panel.open { display: grid; }
+      .mobile-more-panel button {
+        border: 1px solid var(--line);
+        background: #f7f9fd;
+        color: var(--ink);
+        min-height: 44px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        padding: 0 10px;
+        min-width: 0;
+      }
+      .mobile-more-panel button.active {
+        border-color: rgba(200, 0, 0, .28);
+        color: var(--red);
+        background: #fff4f4;
+        font-weight: 800;
+      }
+      .toast { left: 14px; right: 14px; bottom: 88px; }
+    }
+
+    @media (max-width: 430px) {
+      .topbar-title { grid-template-columns: 84px minmax(0, 1fr); }
+      .topbar-logo { width: 84px; }
+      .topbar h1 { font-size: 20px; }
+      .topbar p { font-size: 12px; }
+      .hero { padding: 16px; }
+      .hero h2 { font-size: 22px; }
+      .hero-logo { width: 122px; }
+      .member-meta { max-width: 100%; }
+      .member-card { padding-bottom: 96px; }
+      .member-card::after {
+        width: 64px;
+        height: 64px;
+      }
+      .stats { grid-template-columns: 1fr; }
+      .datebox {
+        width: 48px;
+        min-width: 48px;
+        height: 52px;
+      }
+      .item-row > div[style*="display:flex"] { gap: 10px !important; }
+    }
+
+    @media (max-width: 360px) {
+      main { padding-inline: 10px; }
+      .topbar { margin-inline: -10px; padding-inline: 10px; }
+      .topbar-title { grid-template-columns: 1fr; }
+      .topbar-logo { width: 96px; }
+      .tools { grid-template-columns: 40px 40px minmax(0, 1fr); }
+      .icon-btn { width: 40px; }
+      .primary { font-size: 13px; }
+      .mobile-bar button span { display: none; }
+      .mobile-bar button { min-height: 56px; }
+      .mobile-more-panel { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo" src="assets/sobramid-ba-logo.png" alt="SOBRAMID Bahia" />
+        <div><b>Conecta</b><small>Área do associado</small></div>
+      </div>
+      <nav class="nav" aria-label="Navegação principal"></nav>
+      <div class="sidebar-card">
+        <strong>Vida associativa ativa</strong>
+        <p>Carteira, eventos, certificados, comunicados e educação médica no mesmo fluxo.</p>
+        <a class="admin-access" href="admin.html">Acesso administrativo</a>
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div class="topbar-title">
+          <img class="topbar-logo" src="assets/sobramid-ba-logo.png" alt="SOBRAMID Bahia" />
+          <div>
+            <h1 id="pageTitle">Início</h1>
+            <p id="pageSubtitle">Central prática da vida associativa e científica.</p>
+          </div>
+        </div>
+        <div class="tools">
+          <button class="icon-btn" title="Buscar" onclick="focusSearch()"><svg class="icon"><use href="#i-search"/></svg></button>
+          <button class="icon-btn" title="Notificações" onclick="showToast('Você tem 3 comunicados oficiais não lidos.')"><svg class="icon"><use href="#i-bell"/></svg></button>
+          <button class="primary" onclick="showToast('Check-in por QR Code pronto para o próximo evento.')"><svg class="icon"><use href="#i-qr"/></svg> Check-in</button>
+        </div>
+      </header>
+
+      <section class="section active" id="inicio" data-title="Início" data-subtitle="Central prática da vida associativa e científica.">
+        <div class="hero">
+          <div>
+            <img class="hero-logo" src="assets/sobramid-ba-logo.png" alt="SOBRAMID Bahia" />
+            <div class="pill">Anuidade em dia</div>
+            <h2>Um espaço exclusivo para conectar associados e fortalecer a Medicina da Dor na Bahia.</h2>
+            <p>Acompanhe eventos, acesse materiais científicos, valide certificados e mantenha sua participação na SOBRAMID-BA sempre organizada.</p>
+            <div class="stats">
+              <div class="stat"><b>4</b><span>eventos próximos</span></div>
+              <div class="stat"><b>18</b><span>materiais novos</span></div>
+              <div class="stat"><b>6</b><span>certificados salvos</span></div>
+            </div>
+          </div>
+          <div class="member-card card">
+            <span class="pill">Carteira digital</span>
+            <h3>Dra. Mariana Azevedo</h3>
+            <p>CRM-BA 24831 · Medicina da Dor</p>
+            <div class="member-meta">
+              <div><span>Cidade</span><b>Salvador</b></div>
+              <div><span>Categoria</span><b>Titular</b></div>
+              <div><span>Status</span><b>Ativo</b></div>
+              <div><span>Validade</span><b>2026</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid">
+          <div class="panel span-7">
+            <div class="section-head">
+              <div><h2>Próximos compromissos</h2><p>Eventos científicos e ações da regional.</p></div>
+              <button class="ghost" onclick="navigateTo('eventos')">Ver agenda</button>
+            </div>
+            <div class="list" id="homeEvents"></div>
+          </div>
+          <div class="panel span-5">
+            <div class="section-head">
+              <div><h2>Comunicados recentes</h2><p>Diretoria e secretaria.</p></div>
+            </div>
+            <div class="list" id="homeNotices"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="eventos" data-title="Eventos" data-subtitle="Agenda científica, inscrições, check-in e materiais.">
+        <div class="filters">
+          <input class="search" id="eventSearch" placeholder="Buscar evento, tema ou cidade" oninput="renderEvents()" />
+          <select id="eventType" onchange="renderEvents()">
+            <option value="">Todos os formatos</option>
+            <option>Presencial</option>
+            <option>Online</option>
+            <option>Híbrido</option>
+          </select>
+        </div>
+        <div class="list" id="eventsList"></div>
+      </section>
+
+      <section class="section" id="biblioteca" data-title="Biblioteca" data-subtitle="Conteúdos científicos fechados para associados.">
+        <div class="filters">
+          <input class="search" id="librarySearch" placeholder="Buscar diretrizes, aulas ou temas" oninput="renderLibrary()" />
+          <select id="libraryTopic" onchange="renderLibrary()">
+            <option value="">Todos os temas</option>
+            <option>Dor neuropática</option>
+            <option>Dor oncológica</option>
+            <option>Procedimentos</option>
+            <option>Reabilitação</option>
+          </select>
+        </div>
+        <div class="library-grid" id="libraryGrid"></div>
+      </section>
+
+      <section class="section" id="associados" data-title="Associados" data-subtitle="Diretório médico da regional Bahia.">
+        <div class="filters">
+          <input class="search" id="peopleSearch" placeholder="Buscar por nome, cidade ou especialidade" oninput="renderPeople()" />
+          <select id="cityFilter" onchange="renderPeople()">
+            <option value="">Todas as cidades</option>
+            <option>Salvador</option>
+            <option>Feira de Santana</option>
+            <option>Vitória da Conquista</option>
+            <option>Ilhéus</option>
+          </select>
+        </div>
+        <div class="people-grid" id="peopleGrid"></div>
+      </section>
+
+      <section class="section" id="certificados" data-title="Certificados" data-subtitle="Histórico de participação e validação por QR Code.">
+        <div class="panel">
+          <div class="section-head">
+            <div><h2>Certificados disponíveis</h2><p>Arquivos salvos no perfil do associado.</p></div>
+            <button class="primary" onclick="showToast('Validador de autenticidade aberto.')"><svg class="icon"><use href="#i-qr"/></svg> Validar</button>
+          </div>
+          <div class="list" id="certList"></div>
+        </div>
+      </section>
+
+      <section class="section" id="comunicados" data-title="Comunicados" data-subtitle="Canal oficial da diretoria com os associados.">
+        <div class="list" id="noticeList"></div>
+      </section>
+
+      <section class="section" id="associacao" data-title="Minha associação" data-subtitle="Anuidade, cadastro e documentos profissionais.">
+        <div class="grid">
+          <div class="panel span-6">
+            <div class="section-head"><div><h2>Anuidade 2026</h2><p>Status financeiro e comprovantes.</p></div><span class="pill">Pago</span></div>
+            <div class="progress"><span></span></div>
+            <p style="color:var(--muted);line-height:1.5">Cadastro completo em 78%. Atualize local de atuação e áreas de interesse para melhorar sua presença no diretório.</p>
+            <button class="primary" onclick="showToast('Área Pix/boleto aberta para a secretaria financeira.')"><svg class="icon"><use href="#i-card"/></svg> Ver recibos</button>
+          </div>
+          <div class="panel span-6">
+            <div class="section-head"><div><h2>Documentos</h2><p>Dados profissionais e anexos.</p></div></div>
+            <div class="list">
+              <div class="item"><div class="item-row"><b>CRM e RQE</b><span class="pill">Validado</span></div></div>
+              <div class="item"><div class="item-row"><b>Comprovante de especialidade</b><span class="pill blue">Enviado</span></div></div>
+              <div class="item"><div class="item-row"><b>Endereço profissional</b><span class="pill gold">Atualizar</span></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="beneficios" data-title="Benefícios" data-subtitle="Vantagens exclusivas para associados.">
+        <div class="benefits-grid" id="benefitsGrid"></div>
+      </section>
+
+    </main>
+
+    <aside class="right">
+      <div class="profile">
+        <div class="avatar">MA</div>
+        <div><b>Dra. Mariana Azevedo</b><span>CRM-BA 24831 · Titular</span></div>
+      </div>
+      <div class="panel">
+        <div class="section-head"><div><h2>Trilha do mês</h2><p>Dor neuropática na prática clínica.</p></div></div>
+        <div class="progress"><span></span></div>
+        <p style="color:var(--muted);font-size:14px;line-height:1.45">3 de 4 conteúdos concluídos. Certificado liberado ao finalizar a aula comentada.</p>
+        <button class="primary" onclick="navigateTo('biblioteca')">Continuar estudo</button>
+      </div>
+      <div class="panel" style="margin-top:16px">
+        <div class="section-head"><div><h2>Hoje</h2><p>Atividades recomendadas.</p></div></div>
+        <div class="timeline">
+          <div class="time"><span class="dot"></span><div><b>Confirmar presença</b><span>Simpósio baiano de dor crônica.</span></div></div>
+          <div class="time"><span class="dot"></span><div><b>Baixar certificado</b><span>Workshop de procedimentos intervencionistas.</span></div></div>
+          <div class="time"><span class="dot"></span><div><b>Ler comunicado</b><span>Convocação para assembleia ordinária.</span></div></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <nav class="mobile-bar" aria-label="Navegação móvel"></nav>
+  <div class="mobile-more-panel" id="mobileMore" aria-label="Mais seções"></div>
+  <div class="toast" id="toast"></div>
+
+  <svg width="0" height="0" style="position:absolute">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5Z"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-award" viewBox="0 0 24 24"><path d="M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12ZM9 14l-1 8 4-2 4 2-1-8"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM13.73 21a2 2 0 0 1-3.46 0"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><path d="M3 7h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM3 9h18M7 15h4"/></symbol>
+    <symbol id="i-gift" viewBox="0 0 24 24"><path d="M20 12v10H4V12M2 7h20v5H2ZM12 22V7M12 7H7.5a2.5 2.5 0 1 1 2.5-2.5C10 6 12 7 12 7ZM12 7h4.5A2.5 2.5 0 1 0 14 4.5C14 6 12 7 12 7Z"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><path d="m21 21-4.3-4.3M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"/></symbol>
+    <symbol id="i-qr" viewBox="0 0 24 24"><path d="M3 3h7v7H3ZM14 3h7v7h-7ZM3 14h7v7H3ZM14 14h2M20 14h1M14 18h7M18 21h3"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01"/></symbol>
+  </svg>
+
+  <script>
+    const navItems = [
+      ["inicio", "i-home", "Início", ""],
+      ["eventos", "i-calendar", "Eventos", "4"],
+      ["biblioteca", "i-book", "Biblioteca", ""],
+      ["associados", "i-users", "Associados", ""],
+      ["certificados", "i-award", "Certificados", "6"],
+      ["comunicados", "i-bell", "Comunicados", "3"],
+      ["associacao", "i-card", "Minha associação", ""],
+      ["beneficios", "i-gift", "Benefícios", ""]
+    ];
+
+    const events = [
+      { day: "18", mon: "JUL", title: "Simpósio baiano de dor crônica", type: "Presencial", city: "Salvador", desc: "Programação com palestrantes convidados, check-in por QR Code e materiais pós-evento.", tag: "Inscrições abertas" },
+      { day: "02", mon: "AGO", title: "Curso de bloqueios guiados por imagem", type: "Híbrido", city: "Salvador", desc: "Módulo prático para atualização em procedimentos intervencionistas.", tag: "Vagas limitadas" },
+      { day: "21", mon: "AGO", title: "Webinar: dor neuropática em consultório", type: "Online", city: "Online", desc: "Discussão de condutas, escalas de avaliação e seguimento clínico.", tag: "Lembrete ativo" },
+      { day: "12", mon: "SET", title: "Encontro regional de Medicina da Dor", type: "Presencial", city: "Feira de Santana", desc: "Interiorização, networking médico e atualização científica.", tag: "Em breve" }
+    ];
+
+    const notices = [
+      { title: "Convocação para assembleia ordinária", desc: "Pauta administrativa, prestação de contas e próximos projetos da regional.", tag: "Oficial" },
+      { title: "Atualização cadastral 2026", desc: "Revise cidade de atuação, especialidade e contato profissional autorizado.", tag: "Secretaria" },
+      { title: "Campanha institucional sobre dor crônica", desc: "Cards, textos de apoio e orientações de linguagem já estão disponíveis.", tag: "Campanha" }
+    ];
+
+    const library = [
+      { title: "Diretriz comentada: dor neuropática", topic: "Dor neuropática", kind: "PDF", desc: "Resumo prático com pontos de conduta para consulta." },
+      { title: "Aula: dor oncológica e cuidado integrado", topic: "Dor oncológica", kind: "Vídeo", desc: "Abordagem multidisciplinar, escalonamento e comunicação." },
+      { title: "Checklist de procedimentos intervencionistas", topic: "Procedimentos", kind: "Guia", desc: "Preparo, segurança e acompanhamento." },
+      { title: "Reabilitação e funcionalidade", topic: "Reabilitação", kind: "Artigo", desc: "Estratégias para retorno funcional e seguimento." },
+      { title: "Resumo de congresso: terapias combinadas", topic: "Procedimentos", kind: "Resumo", desc: "Principais aprendizados para prática clínica." },
+      { title: "Consenso interno de encaminhamento", topic: "Dor neuropática", kind: "Consenso", desc: "Critérios de avaliação e interconsulta." }
+    ];
+
+    const people = [
+      { name: "Dr. Lucas Ribeiro", city: "Salvador", spec: "Anestesiologia", interest: "Procedimentos" },
+      { name: "Dra. Helena Matos", city: "Feira de Santana", spec: "Neurologia", interest: "Dor neuropática" },
+      { name: "Dr. Paulo Meireles", city: "Vitória da Conquista", spec: "Ortopedia", interest: "Dor musculoesquelética" },
+      { name: "Dra. Beatriz Nunes", city: "Ilhéus", spec: "Reumatologia", interest: "Reabilitação" },
+      { name: "Dr. Victor Almeida", city: "Salvador", spec: "Neurocirurgia", interest: "Interconsulta" },
+      { name: "Dra. Camila Rocha", city: "Feira de Santana", spec: "Clínica médica", interest: "Pesquisa" }
+    ];
+
+    const certificates = [
+      "Workshop de procedimentos intervencionistas",
+      "Jornada baiana de dor neuropática",
+      "Atualização em dor oncológica",
+      "Mesa-redonda: reabilitação e dor",
+      "Curso introdutório de Medicina da Dor",
+      "Simpósio SOBRAMID-BA 2025"
+    ];
+
+    const benefits = [
+      ["Educação continuada", "Acesso a aulas, diretrizes e materiais científicos selecionados."],
+      ["Descontos em eventos", "Condições exclusivas em cursos, simpósios e congressos parceiros."],
+      ["Assessoria jurídica", "Apoio institucional para temas profissionais dos associados."],
+      ["Networking qualificado", "Diretório interno para aproximação técnica entre colegas."],
+      ["Campanhas oficiais", "Materiais padronizados para consultório e redes profissionais."],
+      ["Parcerias científicas", "Livros, plataformas e oportunidades de atualização médica."]
+    ];
+
+    function icon(id) {
+      return `<svg class="icon" aria-hidden="true"><use href="#${id}"/></svg>`;
+    }
+
+    function makeNav() {
+      const nav = document.querySelector(".nav");
+      const mobile = document.querySelector(".mobile-bar");
+      const mobileMore = document.querySelector("#mobileMore");
+      nav.innerHTML = navItems.map(([id, ico, label, badge]) =>
+        `<button data-target="${id}" onclick="navigateTo('${id}')">${icon(ico)}<span>${label}</span>${badge ? `<span class="badge">${badge}</span>` : ""}</button>`
+      ).join("");
+      mobile.innerHTML = navItems.slice(0, 4).map(([id, ico, label]) =>
+        `<button data-target="${id}" onclick="navigateTo('${id}')">${icon(ico)}<span>${label.split(" ")[0]}</span></button>`
+      ).join("") + `<button data-target="mais" onclick="toggleMobileMore()">${icon("i-more")}<span>Mais</span></button>`;
+      mobileMore.innerHTML = navItems.slice(4).map(([id, ico, label]) =>
+        `<button data-target="${id}" onclick="navigateTo('${id}')">${icon(ico)}<span>${label}</span></button>`
+      ).join("");
+      syncNav("inicio");
+    }
+
+    function navigateTo(id) {
+      document.querySelectorAll(".section").forEach(s => s.classList.toggle("active", s.id === id));
+      const section = document.getElementById(id);
+      document.getElementById("pageTitle").textContent = section.dataset.title;
+      document.getElementById("pageSubtitle").textContent = section.dataset.subtitle;
+      document.querySelector("#mobileMore").classList.remove("open");
+      syncNav(id);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function toggleMobileMore() {
+      document.querySelector("#mobileMore").classList.toggle("open");
+      syncNav(document.querySelector(".section.active")?.id || "inicio");
+    }
+
+    function syncNav(id) {
+      const moreIds = navItems.slice(4).map(([itemId]) => itemId);
+      document.querySelectorAll("[data-target]").forEach(btn => {
+        const isMore = btn.dataset.target === "mais";
+        btn.classList.toggle("active", isMore ? moreIds.includes(id) : btn.dataset.target === id);
+      });
+    }
+
+    function focusSearch() {
+      const active = document.querySelector(".section.active input.search");
+      if (active) active.focus();
+      else showToast("Abra Eventos, Biblioteca ou Associados para buscar.");
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function renderHome() {
+      document.getElementById("homeEvents").innerHTML = events.slice(0, 3).map(eventItem).join("");
+      document.getElementById("homeNotices").innerHTML = notices.map(noticeItem).join("");
+    }
+
+    function eventItem(e) {
+      return `<article class="item">
+        <div class="item-row">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div class="datebox"><div><small>${e.mon}</small>${e.day}</div></div>
+            <div><h3>${e.title}</h3><p>${e.desc}</p></div>
+          </div>
+          <span class="pill blue">${e.type}</span>
+        </div>
+        <div class="item-row"><span class="pill gold">${e.tag}</span><button class="ghost" onclick="showToast('Inscrição aberta para ${e.title}.')">Detalhes</button></div>
+      </article>`;
+    }
+
+    function noticeItem(n) {
+      return `<article class="item"><div class="item-row"><h3>${n.title}</h3><span class="pill">${n.tag}</span></div><p>${n.desc}</p></article>`;
+    }
+
+    function renderEvents() {
+      const q = document.getElementById("eventSearch").value.toLowerCase();
+      const type = document.getElementById("eventType").value;
+      const filtered = events.filter(e => (!type || e.type === type) && `${e.title} ${e.city} ${e.desc}`.toLowerCase().includes(q));
+      document.getElementById("eventsList").innerHTML = filtered.map(eventItem).join("") || empty("Nenhum evento encontrado.");
+    }
+
+    function renderLibrary() {
+      const q = document.getElementById("librarySearch").value.toLowerCase();
+      const topic = document.getElementById("libraryTopic").value;
+      const filtered = library.filter(x => (!topic || x.topic === topic) && `${x.title} ${x.topic} ${x.desc}`.toLowerCase().includes(q));
+      document.getElementById("libraryGrid").innerHTML = filtered.map(x => `<article class="mini-card">
+        <div><span class="pill blue">${x.kind}</span><h3 style="margin-top:12px">${x.title}</h3><p>${x.desc}</p></div>
+        <button class="ghost" onclick="showToast('Abrindo ${x.title}.')">Acessar</button>
+      </article>`).join("") || empty("Nenhum material encontrado.");
+    }
+
+    function renderPeople() {
+      const q = document.getElementById("peopleSearch").value.toLowerCase();
+      const city = document.getElementById("cityFilter").value;
+      const filtered = people.filter(p => (!city || p.city === city) && `${p.name} ${p.city} ${p.spec} ${p.interest}`.toLowerCase().includes(q));
+      document.getElementById("peopleGrid").innerHTML = filtered.map(p => `<article class="mini-card">
+        <div><div class="avatar" style="width:42px;height:42px;font-size:14px">${p.name.split(" ").slice(0,2).map(w => w[0]).join("")}</div><h3 style="margin-top:12px">${p.name}</h3><p>${p.spec} · ${p.city}</p></div>
+        <span class="pill gold">${p.interest}</span>
+      </article>`).join("") || empty("Nenhum associado encontrado.");
+    }
+
+    function renderCertificates() {
+      document.getElementById("certList").innerHTML = certificates.map((c, i) => `<article class="item">
+        <div class="item-row"><div><h3>${c}</h3><p>Emitido pela SOBRAMID-BA · código SBBA-${202600 + i}</p></div><span class="pill">Disponível</span></div>
+        <div class="item-row"><button class="ghost" onclick="showToast('Download do certificado: ${c}.')">Baixar PDF</button><button class="ghost" onclick="showToast('Link de compartilhamento criado.')">Compartilhar</button></div>
+      </article>`).join("");
+    }
+
+    function renderBenefits() {
+      document.getElementById("benefitsGrid").innerHTML = benefits.map(([title, desc]) => `<article class="mini-card"><div><span class="pill">${title}</span><p style="margin-top:14px">${desc}</p></div><button class="ghost" onclick="showToast('Benefício selecionado: ${title}.')">Ver regras</button></article>`).join("");
+    }
+
+    function empty(text) {
+      return `<div class="item"><p>${text}</p></div>`;
+    }
+
+    makeNav();
+    renderHome();
+    renderEvents();
+    renderLibrary();
+    renderPeople();
+    renderCertificates();
+    renderBenefits();
+    document.getElementById("noticeList").innerHTML = notices.concat([
+      { title: "Nota técnica sobre abordagem multidisciplinar", desc: "Documento orienta a comunicação institucional da regional.", tag: "Técnico" },
+      { title: "Chamada para grupos de trabalho", desc: "Inscrições abertas para educação médica, eventos, pesquisa e interiorização.", tag: "Comitês" }
+    ]).map(noticeItem).join("");
+  </script>
+</body>
+</html>
