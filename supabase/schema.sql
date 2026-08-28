@@ -57,10 +57,37 @@ alter table public.cobrancas_anuidade enable row level security;
 alter table public.convites_acesso enable row level security;
 alter table public.certificados enable row level security;
 
+create index if not exists associados_user_id_idx on public.associados(user_id);
+create index if not exists cobrancas_anuidade_associado_id_idx on public.cobrancas_anuidade(associado_id);
+create index if not exists convites_acesso_associado_id_idx on public.convites_acesso(associado_id);
+create index if not exists certificados_associado_id_idx on public.certificados(associado_id);
+
 create policy "Associado visualiza proprio cadastro"
 on public.associados for select
 to authenticated
 using ((select auth.uid()) = user_id);
+
+create policy "Associado visualiza propria anuidade"
+on public.cobrancas_anuidade for select
+to authenticated
+using (
+  exists (
+    select 1 from public.associados
+    where associados.id = cobrancas_anuidade.associado_id
+      and associados.user_id = (select auth.uid())
+  )
+);
+
+create policy "Associado visualiza proprio convite"
+on public.convites_acesso for select
+to authenticated
+using (
+  exists (
+    select 1 from public.associados
+    where associados.id = convites_acesso.associado_id
+      and associados.user_id = (select auth.uid())
+  )
+);
 
 create policy "Associado visualiza proprios certificados"
 on public.certificados for select
